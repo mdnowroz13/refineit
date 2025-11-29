@@ -1,0 +1,21 @@
+name: RefineIt scan (safe)
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  refineit-scan:
+    name: Run RefineIt scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run RefineIt (local composite action)
+        uses: ./.github/actions/refineit-action
+        with:
+          args: '--dry-run --export-report refineit-report.json'
+          create-pr: 'false'

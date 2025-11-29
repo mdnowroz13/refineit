@@ -1,24 +1,21 @@
 export interface FileCacheEntry {
+    path: string;
     hash: string;
-    mtimeMs?: number;
-    size?: number;
-    recordedAt: string;
+    mtimeMs: number;
+    unusedImports?: {
+        name: string;
+        line: number;
+    }[];
+    todoCount?: number;
 }
-export interface CacheDB {
+export interface RefineItCache {
     version: number;
     updatedAt: string;
-    files: Record<string, FileCacheEntry>;
-    lastReport?: any | null;
+    entries: Record<string, FileCacheEntry>;
 }
-export declare function loadCache(): Promise<CacheDB>;
-export declare function saveCache(db: CacheDB): Promise<void>;
-export declare function diffAgainstCache(fileHashes: Record<string, string>): Promise<{
-    changed: string[];
-    unchanged: string[];
-    db: CacheDB;
-}>;
-export declare function updateCacheWithHashes(fileHashes: Record<string, string>): Promise<void>;
-export declare function saveLastReport(report: any): Promise<void>;
-export declare function loadLastReport(): Promise<any | null>;
-export declare function clearCache(): Promise<void>;
+export declare function loadCache(): Promise<RefineItCache | null>;
+export declare function saveCache(cache: RefineItCache): Promise<void>;
+export declare function makeEmptyCache(): RefineItCache;
+export declare function getCachedEntry(cache: RefineItCache | null, normalizedPath: string): FileCacheEntry | undefined;
+export declare function updateCacheEntry(cache: RefineItCache, entry: FileCacheEntry): void;
 //# sourceMappingURL=cache.d.ts.map

@@ -1,0 +1,35 @@
+name: RefineIt Auto-PR (opt-in)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * 0'   # weekly (UTC)
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check opt-in config
+        run: |
+          if [ ! -f .github/refineit.yml ]; then
+            echo ".github/refineit.yml not found: opt-in required. Exiting."
+            exit 78
+          fi
+          echo "Opt-in config present."
+
+      - name: Run RefineIt and create PR
+        uses: ./.github/actions/refineit-action
+        with:
+          args: '--apply --export-report refineit-report.json'
+          create-pr: 'true'
+          push-branch: 'refineit/auto-fixes'
+        env:
+          PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}

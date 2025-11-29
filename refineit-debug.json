@@ -1,27 +1,26 @@
 {
-  "timestamp": "2025-11-29T10:32:50.610Z",
+  "timestamp": "2025-11-29T11:42:20.269Z",
   "unresolvedImportsDebug": [],
   "usageDetectionDebug": [
     {
-      "importer": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-us3rps2/main.ts",
+      "file": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/main.ts",
       "importName": "a",
       "tsMorphUsed": true,
-      "triedIsolated": false,
-      "textualFallback": false,
-      "textualConfirmedUsed": true
+      "triedIsolatedProject": false,
+      "fallbackTextual": false
     }
   ],
   "fileCount": 5,
   "lookedUpFiles": [
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-us3rps2/helper.ts",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-us3rps2/helper",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-us3rps2/main.ts",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-us3rps2/main",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-us3rps2/ghost.ts",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-us3rps2/ghost",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-us3rps2/todo.ts",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-us3rps2/todo",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-us3rps2/dup.ts",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-us3rps2/dup"
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/helper.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/helper",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/main.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/main",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/ghost.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/ghost",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/todo.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/todo",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/dup.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/dup"
   ]
 }

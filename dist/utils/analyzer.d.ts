@@ -3,7 +3,9 @@ export interface UnusedImport {
     name: string;
     line: number;
 }
-export declare function analyzeCodebase(files: string[], whitelist?: string[]): Promise<{
+export declare function analyzeCodebase(files: string[], whitelist?: string[], options?: {
+    noCache?: boolean;
+}): Promise<{
     totalTodos: number;
     totalSecurity: number;
     largeFiles: number;

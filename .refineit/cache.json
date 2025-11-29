@@ -1,0 +1,321 @@
+{
+  "version": 1,
+  "updatedAt": "2025-11-29T11:42:20.263Z",
+  "entries": {
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/helper.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/helper.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764413132239.4998,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/main.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/main.ts",
+      "hash": "60a81649042cb56270ff692926ce7cc5d7062e02",
+      "mtimeMs": 1764413132239.6348,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/ghost.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/ghost.ts",
+      "hash": "431957c6c14753aa360a54d58e811d75208d73cc",
+      "mtimeMs": 1764413132240.6394,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/todo.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/todo.ts",
+      "hash": "050465a5802573bb423694ef9501f0563fc8dd72",
+      "mtimeMs": 1764413132240.6394,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/dup.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/dup.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764413132240.6394,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-yd1xtt6/helper.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-yd1xtt6/helper.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764413837866.1045,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-yd1xtt6/main.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-yd1xtt6/main.ts",
+      "hash": "60a81649042cb56270ff692926ce7cc5d7062e02",
+      "mtimeMs": 1764413837866.1045,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-yd1xtt6/ghost.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-yd1xtt6/ghost.ts",
+      "hash": "431957c6c14753aa360a54d58e811d75208d73cc",
+      "mtimeMs": 1764413837868.1492,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-yd1xtt6/todo.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-yd1xtt6/todo.ts",
+      "hash": "050465a5802573bb423694ef9501f0563fc8dd72",
+      "mtimeMs": 1764413837870.1836,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-yd1xtt6/dup.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-yd1xtt6/dup.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764413837870.1836,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-d3xdmzu/helper.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-d3xdmzu/helper.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764414594452.9631,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-d3xdmzu/main.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-d3xdmzu/main.ts",
+      "hash": "60a81649042cb56270ff692926ce7cc5d7062e02",
+      "mtimeMs": 1764414594452.9631,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-d3xdmzu/ghost.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-d3xdmzu/ghost.ts",
+      "hash": "431957c6c14753aa360a54d58e811d75208d73cc",
+      "mtimeMs": 1764414594452.9631,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-d3xdmzu/todo.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-d3xdmzu/todo.ts",
+      "hash": "050465a5802573bb423694ef9501f0563fc8dd72",
+      "mtimeMs": 1764414594452.9631,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-d3xdmzu/dup.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-d3xdmzu/dup.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764414594452.9631,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-v8a88s1/helper.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-v8a88s1/helper.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764414924734.1746,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-v8a88s1/main.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-v8a88s1/main.ts",
+      "hash": "60a81649042cb56270ff692926ce7cc5d7062e02",
+      "mtimeMs": 1764414924734.1746,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-v8a88s1/ghost.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-v8a88s1/ghost.ts",
+      "hash": "431957c6c14753aa360a54d58e811d75208d73cc",
+      "mtimeMs": 1764414924734.1746,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-v8a88s1/todo.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-v8a88s1/todo.ts",
+      "hash": "050465a5802573bb423694ef9501f0563fc8dd72",
+      "mtimeMs": 1764414924734.1746,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-v8a88s1/dup.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-v8a88s1/dup.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764414924734.1746,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-y9xldd7/helper.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-y9xldd7/helper.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764414989532.7195,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-y9xldd7/main.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-y9xldd7/main.ts",
+      "hash": "60a81649042cb56270ff692926ce7cc5d7062e02",
+      "mtimeMs": 1764414989532.7195,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-y9xldd7/ghost.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-y9xldd7/ghost.ts",
+      "hash": "431957c6c14753aa360a54d58e811d75208d73cc",
+      "mtimeMs": 1764414989532.7195,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-y9xldd7/todo.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-y9xldd7/todo.ts",
+      "hash": "050465a5802573bb423694ef9501f0563fc8dd72",
+      "mtimeMs": 1764414989532.7195,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-y9xldd7/dup.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-y9xldd7/dup.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764414989535.942,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-4v296ag/helper.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-4v296ag/helper.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764415287986.2559,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-4v296ag/main.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-4v296ag/main.ts",
+      "hash": "60a81649042cb56270ff692926ce7cc5d7062e02",
+      "mtimeMs": 1764415287987.059,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-4v296ag/ghost.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-4v296ag/ghost.ts",
+      "hash": "431957c6c14753aa360a54d58e811d75208d73cc",
+      "mtimeMs": 1764415287989.1902,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-4v296ag/todo.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-4v296ag/todo.ts",
+      "hash": "050465a5802573bb423694ef9501f0563fc8dd72",
+      "mtimeMs": 1764415287989.1902,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-4v296ag/dup.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-4v296ag/dup.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764415287990.6958,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-cwjfif5/helper.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-cwjfif5/helper.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764415704618.9888,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-cwjfif5/main.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-cwjfif5/main.ts",
+      "hash": "60a81649042cb56270ff692926ce7cc5d7062e02",
+      "mtimeMs": 1764415704621.572,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-cwjfif5/ghost.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-cwjfif5/ghost.ts",
+      "hash": "431957c6c14753aa360a54d58e811d75208d73cc",
+      "mtimeMs": 1764415704621.572,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-cwjfif5/todo.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-cwjfif5/todo.ts",
+      "hash": "050465a5802573bb423694ef9501f0563fc8dd72",
+      "mtimeMs": 1764415704621.572,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-cwjfif5/dup.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-cwjfif5/dup.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764415704621.572,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-lua78yq/helper.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-lua78yq/helper.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764416172817.9397,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-lua78yq/main.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-lua78yq/main.ts",
+      "hash": "60a81649042cb56270ff692926ce7cc5d7062e02",
+      "mtimeMs": 1764416172817.9397,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-lua78yq/ghost.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-lua78yq/ghost.ts",
+      "hash": "431957c6c14753aa360a54d58e811d75208d73cc",
+      "mtimeMs": 1764416172817.9397,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-lua78yq/todo.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-lua78yq/todo.ts",
+      "hash": "050465a5802573bb423694ef9501f0563fc8dd72",
+      "mtimeMs": 1764416172817.9397,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-lua78yq/dup.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-lua78yq/dup.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764416172817.9397,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/helper.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/helper.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764416539928.228,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/main.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/main.ts",
+      "hash": "60a81649042cb56270ff692926ce7cc5d7062e02",
+      "mtimeMs": 1764416539955.0027,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/ghost.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/ghost.ts",
+      "hash": "431957c6c14753aa360a54d58e811d75208d73cc",
+      "mtimeMs": 1764416539955.0027,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/todo.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/todo.ts",
+      "hash": "050465a5802573bb423694ef9501f0563fc8dd72",
+      "mtimeMs": 1764416539955.0027,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/dup.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/dup.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764416539955.0027,
+      "unusedImports": [],
+      "todoCount": 0
+    }
+  }
+}

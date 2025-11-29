@@ -4,115 +4,69 @@ import path from 'path';
 import { existsSync, mkdirSync } from 'fs';
 
 export interface FileCacheEntry {
-    hash: string;
-    mtimeMs?: number;
-    size?: number;
-    recordedAt: string;
+    path: string;          // absolute normalized path
+    hash: string;          // sha1 hash of file content
+    mtimeMs: number;       // last modified milliseconds
+    // minimal cached analysis for the file (we'll store unusedImports for re-use)
+    unusedImports?: { name: string; line: number }[];
+    // other lightweight per-file metadata we may want later
+    todoCount?: number;
 }
 
-export interface CacheDB {
+export interface RefineItCache {
     version: number;
     updatedAt: string;
-    files: Record<string, FileCacheEntry>;
-    // store last analysis payload so we can return it for incremental runs
-    lastReport?: any | null;
+    entries: Record<string, FileCacheEntry>; // key = normalized absolute path
 }
 
-const CACHE_DIR = path.join(process.cwd(), '.refineit', 'cache');
-const CACHE_FILE = path.join(CACHE_DIR, 'db.json');
+const CACHE_DIR = '.refineit';
+const CACHE_FILE = 'cache.json';
 
-async function ensureCacheDir() {
-    if (!existsSync(CACHE_DIR)) mkdirSync(CACHE_DIR, { recursive: true });
+function repoCachePath() {
+    return path.join(process.cwd(), CACHE_DIR, CACHE_FILE);
 }
 
-/**
- * Load cache from disk. If not found, returns an empty DB.
- */
-export async function loadCache(): Promise<CacheDB> {
+function ensureCacheDir() {
+    const p = path.join(process.cwd(), CACHE_DIR);
+    if (!existsSync(p)) mkdirSync(p, { recursive: true });
+}
+
+export async function loadCache(): Promise<RefineItCache | null> {
     try {
-        if (!existsSync(CACHE_FILE)) {
-            await ensureCacheDir();
-            const base: CacheDB = { version: 1, updatedAt: new Date().toISOString(), files: {}, lastReport: null };
-            await fs.writeFile(CACHE_FILE, JSON.stringify(base, null, 2), 'utf8');
-            return base;
-        }
-        const raw = await fs.readFile(CACHE_FILE, 'utf8');
-        const parsed = JSON.parse(raw) as CacheDB;
-        if (!parsed.files) parsed.files = {};
-        if (!('lastReport' in parsed)) parsed.lastReport = null;
+        const p = repoCachePath();
+        if (!existsSync(p)) return null;
+        const raw = await fs.readFile(p, 'utf8');
+        const parsed = JSON.parse(raw) as RefineItCache;
+        if (!parsed || !parsed.entries) return null;
         return parsed;
-    } catch (e) {
-        // If anything fails, return empty DB (do not crash analysis)
-        return { version: 1, updatedAt: new Date().toISOString(), files: {}, lastReport: null };
-    }
-}
-
-/**
- * Save a cache DB to disk.
- */
-export async function saveCache(db: CacheDB) {
-    await ensureCacheDir();
-    db.updatedAt = new Date().toISOString();
-    await fs.writeFile(CACHE_FILE, JSON.stringify(db, null, 2), 'utf8');
-}
-
-/**
- * Given a map of file->hash, returns:
- *  - changed: files that are new or have different hash than cache
- *  - unchanged: files present and identical
- */
-export async function diffAgainstCache(fileHashes: Record<string, string>): Promise<{ changed: string[]; unchanged: string[]; db: CacheDB }> {
-    const db = await loadCache();
-    const changed: string[] = [];
-    const unchanged: string[] = [];
-
-    for (const [file, hash] of Object.entries(fileHashes)) {
-        const prev = db.files[file];
-        if (!prev || prev.hash !== hash) changed.push(file);
-        else unchanged.push(file);
-    }
-
-    return { changed, unchanged, db };
-}
-
-/**
- * Update cache entries for the given file->hash map and persist.
- */
-export async function updateCacheWithHashes(fileHashes: Record<string, string>) {
-    const db = await loadCache();
-    for (const [file, hash] of Object.entries(fileHashes)) {
-        db.files[file] = {
-            hash,
-            recordedAt: new Date().toISOString()
-        };
-    }
-    await saveCache(db);
-}
-
-/**
- * Save last analysis report payload to cache (so incremental run can return it).
- */
-export async function saveLastReport(report: any) {
-    const db = await loadCache();
-    db.lastReport = report;
-    await saveCache(db);
-}
-
-/**
- * Retrieve lastReport from cache (may be null).
- */
-export async function loadLastReport(): Promise<any | null> {
-    const db = await loadCache();
-    return db.lastReport || null;
-}
-
-/**
- * Helper to clear cache (useful in tests / debugging).
- */
-export async function clearCache() {
-    try {
-        if (existsSync(CACHE_FILE)) await fs.unlink(CACHE_FILE);
     } catch {
-        // ignore
+        return null;
     }
+}
+
+export async function saveCache(cache: RefineItCache) {
+    try {
+        ensureCacheDir();
+        const p = repoCachePath();
+        await fs.writeFile(p, JSON.stringify(cache, null, 2), 'utf8');
+    } catch (e) {
+        // ignore write errors
+    }
+}
+
+export function makeEmptyCache(): RefineItCache {
+    return { version: 1, updatedAt: new Date().toISOString(), entries: {} };
+}
+
+/**
+ * Helpers to get/update per-file entries
+ */
+export function getCachedEntry(cache: RefineItCache | null, normalizedPath: string): FileCacheEntry | undefined {
+    if (!cache) return undefined;
+    return cache.entries[normalizedPath];
+}
+
+export function updateCacheEntry(cache: RefineItCache, entry: FileCacheEntry) {
+    cache.entries[entry.path] = entry;
+    cache.updatedAt = new Date().toISOString();
 }

@@ -1,0 +1,102 @@
+name: "RefineIt (run analyzer)"
+description: "Run the RefineIt static analyzer (dry-run by default). Optionally create a PR with fixes if the repo owner opted in."
+author: "RefineIt Team"
+branding:
+  icon: "tools"
+  color: "blue"
+
+inputs:
+  args:
+    description: "Extra CLI args passed to refineit. Default: --dry-run --export-report refineit-report.json"
+    required: false
+    default: '--dry-run --export-report refineit-report.json'
+  create-pr:
+    description: "If 'true', attempt to create a PR with --apply changes. Requires PUSH_TOKEN secret in workflow and opt-in file in repo. Default: false"
+    required: false
+    default: 'false'
+  push-branch:
+    description: "Branch name to use when creating PRs (if create-pr=true). Default prefix used if blank."
+    required: false
+    default: ''
+  working-directory:
+    description: "Path inside the repository to run refineit from (default: repository root)."
+    required: false
+    default: '.'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Move to working directory (if specified)
+      if: ${{ inputs.working-directory != '.' }}
+      run: |
+        cd "${{ inputs.working-directory }}"
+
+    - name: Install dependencies (if package.json present)
+      run: |
+        if [ -f package.json ]; then
+          npm ci --silent --no-audit --no-fund
+        fi
+
+    - name: Run RefineIt analyzer
+      id: run_refineit
+      run: |
+        set -e
+        echo "Running: npx refineit ${{ inputs.args }}"
+        # allow failure (we still want artifacts); refineit returns non-zero for non-empty findings
+        npx refineit ${{ inputs.args }} || true
+
+    - name: Upload report artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: refineit-report
+        path: |
+          refineit-report.json
+          refineit-debug.json
+        retention-days: 7
+
+    - name: Create branch & PR (safe mode — only when create-pr input true)
+      if: ${{ inputs.create-pr == 'true' && secrets.PUSH_TOKEN }}
+      run: |
+        set -e
+        echo "Verifying --apply present in args"
+        echo "${{ inputs.args }}" | grep -q -- '--apply' || (echo "Refuse: --apply not present in args. Aborting create-pr." && exit 1)
+
+        BRANCH="${{ inputs.push-branch }}"
+        if [ -z "$BRANCH" ]; then
+          BRANCH="refineit/auto-fixes-${GITHUB_RUN_ID}"
+        fi
+
+        git config user.name "refineit-bot (action)"
+        git config user.email "refineit-bot@users.noreply.github.com"
+
+        git checkout -b "$BRANCH"
+        git add -A
+        if git diff --cached --quiet; then
+          echo "No changes to commit; exiting."
+          exit 0
+        fi
+        git commit -m "refineit: apply suggested fixes (automated)"
+        git push "https://x-access-token:${{ secrets.PUSH_TOKEN }}@github.com/${{ github.repository }}" "HEAD:$BRANCH"
+
+        # Create PR (fallback to API if gh CLI not available)
+        if command -v gh >/dev/null 2>&1; then
+          gh auth status || echo "${{ secrets.PUSH_TOKEN }}" | gh auth login --with-token
+          gh pr create --title "refineit: suggested import fixes" --body "Automated fixes suggested by RefineIt. Please review." --base "${{ github.ref_name }}" --head "$BRANCH"
+        else
+          PR_BODY='{"title":"refineit: suggested import fixes","head":"'"$BRANCH"'","base":"'"${GITHUB_REF##refs/heads/}"'","body":"Automated fixes suggested by RefineIt. Please review."}'
+          curl -s -X POST -H "Authorization: token ${{ secrets.PUSH_TOKEN }}" -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" > /dev/null
+        fi
+      shell: bash

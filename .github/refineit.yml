@@ -1,0 +1,8 @@
+# Opt-in config for automated PRs by RefineIt.
+enabled: true
+branches:
+  - main
+paths:
+  - src/
+max_changed_files: 50
+notify: ''

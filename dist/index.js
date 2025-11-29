@@ -3,14 +3,13 @@ import { intro, outro, spinner, select, note, confirm } from '@clack/prompts';
 import color from 'picocolors';
 import Table from 'cli-table3';
 import fs from 'fs/promises';
-import { getFilesWithHashes } from './utils/scanner.js';
+import { getFiles } from './utils/scanner.js';
 import { analyzeCodebase } from './utils/analyzer.js';
 import { fixImports } from './utils/fixer.js';
 import { showBanner, typeWriter, sleep } from './utils/art.js';
 import { isGitClean } from './utils/git.js';
 import { loadConfig } from './utils/config.js';
 import { createBackupRoot, backupFile, listBackups, restoreBackup } from './utils/backup.js';
-import { diffAgainstCache, updateCacheWithHashes, loadLastReport, saveLastReport } from './utils/cache.js';
 function parseArgs() {
     const argv = process.argv.slice(2);
     const out = {};
@@ -37,8 +36,8 @@ function parseArgs() {
             out.failOn = argv[++i];
         else if (a === '--help' || a === '-h')
             out.help = true;
-        else if (a === '--incremental' || a === 'incremental')
-            out.incremental = true;
+        else if (a === '--no-cache')
+            out.noCache = true;
     }
     return out;
 }
@@ -46,7 +45,7 @@ function printHelp() {
     console.log(`
 RefineIt - CLI
 Usage:
-  refineit [--dry-run] [--apply] [--yes] [--ci] [--export-report path] [--format json|text] [--incremental]
+  refineit [--dry-run] [--apply] [--yes] [--ci] [--export-report path] [--format json|text] [--no-cache]
   refineit list-backups
   refineit undo <backupId>
 
@@ -57,7 +56,7 @@ Important flags:
   --ci                 : CI mode (exit codes and JSON output)
   --export-report PATH : write report JSON to path
   --format json|text   : output format
-  --incremental        : return cached report immediately if no files changed
+  --no-cache           : disable cache & force full analysis
   list-backups         : list available backups
   undo <backupId>      : restore a backup
 `);
@@ -105,29 +104,9 @@ async function main() {
     intro(color.bgCyan(color.black(' ✨ RefineIt ')));
     const s = spinner();
     s.start('Scanning repository...');
-    const { files, hashes } = await getFilesWithHashes(config.dirs, config.ignore);
-    const { changed } = await diffAgainstCache(hashes);
+    const files = await getFiles(config.dirs, config.ignore);
+    const data = await analyzeCodebase(files, config.whitelist, { noCache: !!args.noCache });
     s.stop('Analysis Complete.');
-    if (args.incremental && changed.length === 0) {
-        const last = await loadLastReport();
-        if (last) {
-            console.log(color.green('◇  No changes detected — returning cached analysis (incremental mode).'));
-            if (args.exportReport) {
-                await fs.writeFile(args.exportReport, JSON.stringify(last, null, 2), 'utf8');
-                console.log(color.green('✅ Saved to ' + args.exportReport));
-            }
-            if (args.ci && (args.format === 'json' || args.exportReport)) {
-                const json = JSON.stringify({ data: last, score: last.score ?? null }, null, 2);
-                if (args.format === 'json')
-                    console.log(json);
-            }
-            process.exit(0);
-        }
-        else {
-            console.log(color.yellow('◇  Incremental requested but no cached report available — running full analysis.'));
-        }
-    }
-    const data = await analyzeCodebase(files, config.whitelist);
     let score = 100;
     score -= (data.totalTodos * 1);
     score -= (data.deadFiles.length * 2);
@@ -137,18 +116,6 @@ async function main() {
     score -= (data.unusedImports.length * 2);
     if (score < 0)
         score = 0;
-    try {
-        await updateCacheWithHashes(hashes);
-    }
-    catch (e) {
-        console.warn('Warning: failed to update .refineit cache:', e?.message || e);
-    }
-    try {
-        const payload = { ...data, score };
-        await saveLastReport(payload);
-    }
-    catch (e) {
-    }
     let grade = 'A';
     if (score < 90)
         grade = 'B';
@@ -228,7 +195,7 @@ async function main() {
             try {
                 await fs.unlink(f);
             }
-            catch (e) { }
+            catch { }
         }
         if (data.unusedImports.length > 0) {
             try {
