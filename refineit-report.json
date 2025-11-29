@@ -3,34 +3,34 @@
   "totalSecurity": 1,
   "largeFiles": 0,
   "deadFiles": [
-    "E:/refineit/src/utils/art.ts",
-    "E:/refineit/src/utils/backup.ts",
-    "E:/refineit/src/utils/cache.ts",
-    "E:/refineit/src/utils/fixer.ts",
-    "E:/refineit/src/utils/git.ts",
-    "E:/refineit/src/utils/hash.ts",
-    "E:/refineit/src/utils/scanner.ts",
-    "E:/refineit/src/utils/tsconfig-resolver.ts",
-    "E:/refineit/src/utils/worker-scanner.ts"
+    "/home/runner/work/refineit/refineit/src/utils/art.ts",
+    "/home/runner/work/refineit/refineit/src/utils/backup.ts",
+    "/home/runner/work/refineit/refineit/src/utils/cache.ts",
+    "/home/runner/work/refineit/refineit/src/utils/fixer.ts",
+    "/home/runner/work/refineit/refineit/src/utils/git.ts",
+    "/home/runner/work/refineit/refineit/src/utils/hash.ts",
+    "/home/runner/work/refineit/refineit/src/utils/scanner.ts",
+    "/home/runner/work/refineit/refineit/src/utils/tsconfig-resolver.ts",
+    "/home/runner/work/refineit/refineit/src/utils/worker-scanner.ts"
   ],
   "duplicates": [],
   "duplicatesCount": 0,
   "unusedImports": [],
   "detailedIssues": [
     {
-      "file": "E:/refineit/src/utils/analyzer.ts",
+      "file": "/home/runner/work/refineit/refineit/src/utils/analyzer.ts",
       "issues": [
         "🔒 Security Risk"
       ]
     },
     {
-      "file": "E:/refineit/src/utils/analyzer.ts",
+      "file": "/home/runner/work/refineit/refineit/src/utils/analyzer.ts",
       "issues": [
         "@refineit-keep"
       ]
     },
     {
-      "file": "E:\\refineit\\src\\utils\\analyzer.ts",
+      "file": "\\home\\runner\\work\\refineit\\refineit\\src\\utils\\analyzer.ts",
       "issues": [
         "@refineit-keep"
       ]
