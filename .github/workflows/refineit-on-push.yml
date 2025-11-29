@@ -26,9 +26,4 @@ jobs:
           # THIS IS NEW: It fixes the "secrets" error
           push_token: ${{ secrets.PUSH_TOKEN }}
 
-      - name: Upload Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: refineit-report
-          path: refineit-report.json
+      
