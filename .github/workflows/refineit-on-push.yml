@@ -14,8 +14,21 @@ jobs:
     name: Run RefineIt scan
     runs-on: ubuntu-latest
     steps:
+      # --- FIX STARTS HERE ---
+      - name: Checkout code
+        uses: actions/checkout@v4
+      # --- FIX ENDS HERE ---
+
       - name: Run RefineIt (local composite action)
         uses: ./.github/actions/refineit-action
         with:
           args: '--dry-run --export-report refineit-report.json'
           create-pr: 'false'
+      
+      # Optional: Upload the report so you can download it from the Actions tab
+      - name: Upload Report
+        if: always() 
+        uses: actions/upload-artifact@v4
+        with:
+          name: refineit-report
+          path: refineit-report.json

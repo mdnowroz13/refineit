@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2025-11-29T11:42:20.263Z",
+  "updatedAt": "2025-11-29T13:04:49.395Z",
   "entries": {
     "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/helper.ts": {
       "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/helper.ts",
@@ -314,6 +314,139 @@
       "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-ruuthlm/dup.ts",
       "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
       "mtimeMs": 1764416539955.0027,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/__tests__/analyzer.test.js": {
+      "path": "E:/refineit/__tests__/analyzer.test.js",
+      "hash": "64708840c1910ab7a4be1c04df2f98f83bc078f0",
+      "mtimeMs": 1764399668307.6484,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "E:/refineit/__tests__/analyzer.test.ts": {
+      "path": "E:/refineit/__tests__/analyzer.test.ts",
+      "hash": "b554b16ad958e4ef0cf86d47b68fbddde58515ed",
+      "mtimeMs": 1764400412943.1475,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "E:/refineit/__tests__/backup.test.ts": {
+      "path": "E:/refineit/__tests__/backup.test.ts",
+      "hash": "5e1ede457f00cabcbc388f299627f84645a49e9b",
+      "mtimeMs": 1764409094236.079,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/__tests__/fixer.test.js": {
+      "path": "E:/refineit/__tests__/fixer.test.js",
+      "hash": "9f8b7d3b4305d27c4b45c48fd1e3dc60fa970e17",
+      "mtimeMs": 1764399668307.6484,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/__tests__/fixer.test.ts": {
+      "path": "E:/refineit/__tests__/fixer.test.ts",
+      "hash": "fabdee94d7c6ff8eb205150f21afb3b6a30e36b8",
+      "mtimeMs": 1764398656072.5706,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/__tests__/tsconfig-resolver.test.js": {
+      "path": "E:/refineit/__tests__/tsconfig-resolver.test.js",
+      "hash": "91f1316ce320a90c0cdd7d6fbfe1901abc6dd78f",
+      "mtimeMs": 1764399668316.1821,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/__tests__/tsconfig-resolver.test.ts": {
+      "path": "E:/refineit/__tests__/tsconfig-resolver.test.ts",
+      "hash": "12e1401f6bfa114e2f7f594f42f2ad4d3d2b7a1d",
+      "mtimeMs": 1764398640216.4517,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/index.ts": {
+      "path": "E:/refineit/src/index.ts",
+      "hash": "9136fae772d5092c074354634dc1ea27940988d3",
+      "mtimeMs": 1764413109466.504,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/utils/analyzer.ts": {
+      "path": "E:/refineit/src/utils/analyzer.ts",
+      "hash": "950075bff09433ce32102c5c9c6034c8b2590f65",
+      "mtimeMs": 1764421086882.1094,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/utils/art.ts": {
+      "path": "E:/refineit/src/utils/art.ts",
+      "hash": "7b98e8c15a52023ae8961c25076d731639884ad9",
+      "mtimeMs": 1764321091374.1165,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/utils/backup.ts": {
+      "path": "E:/refineit/src/utils/backup.ts",
+      "hash": "b9614f5e0bf9a821b344db8a9913372d97a6236d",
+      "mtimeMs": 1764407992355.1123,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/utils/cache.ts": {
+      "path": "E:/refineit/src/utils/cache.ts",
+      "hash": "c311aac941eedfa0fe22ddc623eea5150a8c28f1",
+      "mtimeMs": 1764413064470.9785,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/utils/config.ts": {
+      "path": "E:/refineit/src/utils/config.ts",
+      "hash": "b165c798d25bcc1187a062c0852f58870166b0cb",
+      "mtimeMs": 1764325772654.1826,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/utils/fixer.ts": {
+      "path": "E:/refineit/src/utils/fixer.ts",
+      "hash": "a1e64b9be427627810e418669ba5b2f39a991ec3",
+      "mtimeMs": 1764337394642.294,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/utils/git.ts": {
+      "path": "E:/refineit/src/utils/git.ts",
+      "hash": "932855189fff047fb3228810680434161df0a9f5",
+      "mtimeMs": 1764321108066.4973,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/utils/hash.ts": {
+      "path": "E:/refineit/src/utils/hash.ts",
+      "hash": "2c73b915d387efd8f7624e98bc3692277984309f",
+      "mtimeMs": 1764413050007.9128,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/utils/scanner.ts": {
+      "path": "E:/refineit/src/utils/scanner.ts",
+      "hash": "eb02266b55609316126eb70390356c3b26d1232b",
+      "mtimeMs": 1764409160368.1006,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/utils/tsconfig-resolver.ts": {
+      "path": "E:/refineit/src/utils/tsconfig-resolver.ts",
+      "hash": "ebe89c09c1340e74e08f933f7927f41b500c8777",
+      "mtimeMs": 1764412299690.239,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "E:/refineit/src/utils/worker-scanner.ts": {
+      "path": "E:/refineit/src/utils/worker-scanner.ts",
+      "hash": "59e6689cbe281cbafcae6937012483b021e53525",
+      "mtimeMs": 1764409143608.236,
       "unusedImports": [],
       "todoCount": 0
     }
