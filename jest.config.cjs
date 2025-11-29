@@ -34,7 +34,7 @@ module.exports = {
     // Keep your reporters
     reporters: [
         'default',
-        ['jest-junit', { output: 'jest-junit.xml' }]
+        ['jest-junit', { outputName: 'jest-junit.xml' }]
     ],
 
     // This mapper is still needed to strip .js extensions from your imports
