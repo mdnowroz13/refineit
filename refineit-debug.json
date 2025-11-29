@@ -1,9 +1,9 @@
 {
-  "timestamp": "2025-11-29T13:23:55.433Z",
+  "timestamp": "2025-11-29T14:36:09.428Z",
   "unresolvedImportsDebug": [],
   "usageDetectionDebug": [
     {
-      "file": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/main.ts",
+      "file": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/main.ts",
       "importName": "a",
       "tsMorphUsed": true,
       "triedIsolatedProject": false,
@@ -12,15 +12,15 @@
   ],
   "fileCount": 5,
   "lookedUpFiles": [
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/helper.ts",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/helper",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/main.ts",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/main",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/ghost.ts",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/ghost",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/todo.ts",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/todo",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/dup.ts",
-    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/dup"
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/helper.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/helper",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/main.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/main",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/ghost.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/ghost",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/todo.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/todo",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/dup.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/dup"
   ]
 }

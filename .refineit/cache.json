@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2025-11-29T13:23:55.427Z",
+  "updatedAt": "2025-11-29T14:36:09.423Z",
   "entries": {
     "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/helper.ts": {
       "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-s19aaqb/helper.ts",
@@ -482,6 +482,41 @@
       "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-q782gbw/dup.ts",
       "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
       "mtimeMs": 1764422635157.9944,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/helper.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/helper.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764426969151.9255,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/main.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/main.ts",
+      "hash": "60a81649042cb56270ff692926ce7cc5d7062e02",
+      "mtimeMs": 1764426969151.9255,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/ghost.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/ghost.ts",
+      "hash": "431957c6c14753aa360a54d58e811d75208d73cc",
+      "mtimeMs": 1764426969151.9255,
+      "unusedImports": [],
+      "todoCount": 0
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/todo.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/todo.ts",
+      "hash": "050465a5802573bb423694ef9501f0563fc8dd72",
+      "mtimeMs": 1764426969151.9255,
+      "unusedImports": [],
+      "todoCount": 2
+    },
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/dup.ts": {
+      "path": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-tsvuhwk/dup.ts",
+      "hash": "0d437434569fdbbd74283b98e427d4d627bce29a",
+      "mtimeMs": 1764426969151.9255,
       "unusedImports": [],
       "todoCount": 0
     }
