@@ -1,0 +1,24 @@
+{
+  "totalTodos": 0,
+  "totalSecurity": 0,
+  "largeFiles": 0,
+  "deadFiles": [
+    "E:/refineit/src/utils/art.ts",
+    "E:/refineit/src/utils/backup.ts",
+    "E:/refineit/src/utils/fixer.ts",
+    "E:/refineit/src/utils/git.ts",
+    "E:/refineit/src/utils/scanner.ts"
+  ],
+  "duplicates": [],
+  "duplicatesCount": 0,
+  "unusedImports": [],
+  "detailedIssues": [
+    {
+      "file": "E:/refineit/src/utils/analyzer.ts",
+      "issues": [
+        "🔒 @refineit-keep present"
+      ]
+    }
+  ],
+  "cycles": []
+}

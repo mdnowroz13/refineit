@@ -1,0 +1,27 @@
+{
+  "timestamp": "2025-11-29T08:15:40.985Z",
+  "unresolvedImportsDebug": [],
+  "usageDetectionDebug": [
+    {
+      "importer": "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-no71jyh/main.ts",
+      "importName": "a",
+      "tsMorphUsed": true,
+      "triedIsolated": false,
+      "textualFallback": false,
+      "textualConfirmedUsed": true
+    }
+  ],
+  "fileCount": 5,
+  "lookedUpFiles": [
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-no71jyh/helper.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-no71jyh/helper",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-no71jyh/main.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-no71jyh/main",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-no71jyh/ghost.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-no71jyh/ghost",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-no71jyh/todo.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-no71jyh/todo",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-no71jyh/dup.ts",
+    "C:/Users/HP/AppData/Local/Temp/refineit-analyzer-no71jyh/dup"
+  ]
+}

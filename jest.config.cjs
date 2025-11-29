@@ -1,28 +1,44 @@
 /** jest.config.cjs */
 module.exports = {
-    preset: 'ts-jest/presets/js-with-ts-esm',
+    // Use the standard preset (not the ESM one) to avoid experimental flags
+    preset: 'ts-jest',
     testEnvironment: 'node',
-    testMatch: ['**/__tests__/**/*.test.ts'],
-    // Order matters here! Jest looks for ts/tsx first.
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
-    transformIgnorePatterns: ['/node_modules/'],
+
+    // Keep your timeout and matchers
     testTimeout: 20000,
-    globals: {
-        'ts-jest': {
-            useESM: true,
-            tsconfig: 'tsconfig.json',
-            diagnostics: { warnOnly: true }
-        }
+    testMatch: ['**/__tests__/**/*.test.ts'],
+
+    // Clean up extensions
+    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+
+    transform: {
+        '^.+\\.tsx?$': [
+            'ts-jest',
+            {
+                // CRITICAL: We force CJS for tests to stop the "import" error
+                // regardless of what your package.json says.
+                tsconfig: {
+                    module: 'commonjs',
+                    moduleResolution: 'node',
+                    allowSyntheticDefaultImports: true,
+                    esModuleInterop: true
+                },
+                diagnostics: { warnOnly: true }
+            }
+        ]
     },
+
+    // Keep your node_modules ignore rules
+    transformIgnorePatterns: ['/node_modules/'],
+
+    // Keep your reporters
     reporters: [
         'default',
         ['jest-junit', { output: 'jest-junit.xml' }]
     ],
+
+    // This mapper is still needed to strip .js extensions from your imports
     moduleNameMapper: {
-        // Map to $1 (no extension) so Jest finds .ts in src OR .js in node_modules
-        '^(.*\\/src\\/.*)\\.js$': '$1',
-        '^(.*\\/src\\/.*)\\.jsx$': '$1',
-        '^(\\.{1,2}\\/.*)\\.js$': '$1',
-        '^(\\.{1,2}\\/.*)\\.jsx$': '$1'
+        '^(\\.{1,2}/.*)\\.js$': '$1',
     }
 };
