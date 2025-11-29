@@ -28,8 +28,9 @@ jobs:
       - name: Run RefineIt and create PR
         uses: ./.github/actions/refineit-action
         with:
-          args: '--apply --export-report refineit-report.json'
+          # FIX 1: Added --yes so it doesn't hang on "Are you sure?"
+          args: '--apply --yes --export-report refineit-report.json'
           create-pr: 'true'
           push-branch: 'refineit/auto-fixes'
-        env:
-          PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+          # FIX 2: Moved push_token here (under 'with') so the action can actually read it!
+          push_token: ${{ secrets.PUSH_TOKEN }}
