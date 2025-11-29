@@ -1,8 +1,21 @@
-node_modules
-dist
-dist/
+# build outputs
+/dist/
+/build/
+/lib/
+
+# TypeScript incremental files
 *.tsbuildinfo
-refineit-report.json
-refineit-debug.json
-coverage
-jest-junit.xml
+
+# test / coverage outputs
+/coverage/
+/jest-junit.xml
+/jest-junit.xml
+/jest-results.xml
+
+# refineit outputs
+/refineit-report.json
+/refineit-debug.json
+
+# Node
+/node_modules/
+/npm-debug.log
