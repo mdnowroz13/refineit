@@ -1,29 +1,25 @@
 name: "RefineIt (run analyzer)"
 description: "Run the RefineIt static analyzer. Optionally create a PR with fixes."
 author: "RefineIt Team"
-branding:
-  icon: "tools"
-  color: "blue"
-
 inputs:
   args:
-    description: "Extra CLI args passed to refineit."
+    description: "Extra CLI args"
     required: false
     default: '--dry-run --export-report refineit-report.json'
   create-pr:
-    description: "If 'true', attempt to create a PR with changes."
+    description: "If 'true', create PR"
     required: false
     default: 'false'
   push-branch:
-    description: "Branch name to use when creating PRs."
+    description: "Branch name"
     required: false
     default: ''
   working-directory:
-    description: "Path inside the repository to run refineit from."
+    description: "Path"
     required: false
     default: '.'
   push_token:
-    description: "GitHub token for pushing changes"
+    description: "GitHub token"
     required: false
     default: ''
 
@@ -45,6 +41,7 @@ runs:
       run: |
         if [ -f package.json ]; then
           npm ci --silent --no-audit --no-fund
+          # We build, but we will clean up the mess right after!
           npm run build
         fi
       shell: bash
@@ -54,10 +51,12 @@ runs:
       run: |
         set -e
         
-        # --- FORCE CLEANUP (The Insurance Step) ---
+        # --- THE MAGIC CLEANUP STEP ---
+        echo "✨ FORCE CLEANING WORKSPACE BEFORE SCAN..."
         rm -rf dist *.tsbuildinfo refineit-report.json refineit-debug.json || true
         git checkout .
-        # ------------------------------------------
+        echo "✨ WORKSPACE IS NOW CLEAN"
+        # -----------------------------
 
         echo "Running: npx refineit ${{ inputs.args }}"
         npx refineit ${{ inputs.args }} || true
