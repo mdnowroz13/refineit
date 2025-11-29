@@ -45,7 +45,6 @@ runs:
       run: |
         if [ -f package.json ]; then
           npm ci --silent --no-audit --no-fund
-          # Ensure build is run so refineit has access to compiled code if needed
           npm run build
         fi
       shell: bash
@@ -54,6 +53,12 @@ runs:
       id: run_refineit
       run: |
         set -e
+        
+        # --- FORCE CLEANUP (The Insurance Step) ---
+        rm -rf dist *.tsbuildinfo refineit-report.json refineit-debug.json || true
+        git checkout .
+        # ------------------------------------------
+
         echo "Running: npx refineit ${{ inputs.args }}"
         npx refineit ${{ inputs.args }} || true
       shell: bash
@@ -72,13 +77,6 @@ runs:
       if: inputs.create-pr == 'true' && inputs.push_token != ''
       run: |
         set -e
-        
-        # --- CLEANUP STEP TO SATISFY SAFETY LOCK ---
-        echo "Cleaning up artifacts to ensure clean workspace..."
-        rm -rf dist *.tsbuildinfo refineit-report.json refineit-debug.json || true
-        # -------------------------------------------
-
-        # Logic to create PR if enabled
         echo "Verifying --apply present in args"
         echo "${{ inputs.args }}" | grep -q -- '--apply' || (echo "Refuse: --apply not present. Aborting." && exit 1)
 
@@ -100,9 +98,7 @@ runs:
         
         git push "https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}" "HEAD:$BRANCH"
         
-        # Create PR using API or GH CLI
         PR_BODY='{"title":"refineit: suggested import fixes","head":"'"$BRANCH"'","base":"'"${GITHUB_REF##refs/heads/}"'","body":"Automated fixes."}'
         curl -s -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
           https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" > /dev/null
       shell: bash
-

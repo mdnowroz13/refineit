@@ -1,2 +1,8 @@
 node_modules
 dist
+dist/
+*.tsbuildinfo
+refineit-report.json
+refineit-debug.json
+coverage
+jest-junit.xml
