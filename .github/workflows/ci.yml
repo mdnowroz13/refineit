@@ -8,16 +8,27 @@ on:
 
 jobs:
   test:
-    name: Node.js tests (Jest)
+    name: Node.js tests (Jest) (${{ matrix.node-version }})
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         node-version: [18.x]
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Show basic info
+        run: |
+          echo "== RUN ON $(uname -a)"
+          node --version
+          npm --version
+          echo "PWD: $(pwd)"
+          echo "Files in repo root:"
+          ls -la
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -31,21 +42,56 @@ jobs:
       - name: Build (tsc)
         run: npm run build
 
-      - name: Run tests (Jest)
+      - name: List built files (for debugging)
+        run: |
+          echo "=== root files ==="
+          ls -la
+          echo "=== dist files ==="
+          ls -la dist || true
+
+      - name: Run Jest (capture output)
+        # we capture stdout/stderr to files and still let the step fail (so job fails on test failure)
         env:
           CI: true
-        run: npm test --silent
+        run: |
+          mkdir -p test-artifacts
+          # run jest, capture stdout/stderr to files, save exit code
+          npm test --silent 2>&1 | tee test-artifacts/jest-output.txt || true
+          # if jest-junit didn't write to root, try common locations
+          echo "### junit file locations after test run:"
+          ls -la . || true
+          ls -la ./coverage || true
+          if [ -f ./jest-junit.xml ]; then echo "junit at ./jest-junit.xml"; fi
+          # detect exit code by searching for "Test Suites:" and failures line
+          grep -E "Test Suites:.*failed" test-artifacts/jest-output.txt || true
+          # determine exit code the normal way (re-run jest quickly to surface exit code)
+          npx jest --listTests > /dev/null 2>&1 || true
+          # Exit with the actual jest exit code (run jest again but only exit code matters; keep quiet)
+          npx jest --bail --runInBand --silent
+        # NOTE: this step will exit non-zero when tests fail (intended), so job fails and subsequent "if: always()" steps still run
 
-      - name: Upload JUnit test report (jest-junit.xml)
+      - name: Upload raw jest output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-output
+          path: test-artifacts/jest-output.txt
+
+      - name: Upload JUnit report (if exists)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: junit-report
-          path: ./jest-junit.xml
+          path: |
+            ./jest-junit.xml
+            **/jest-junit.xml
 
       - name: Upload coverage (if exists)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: coverage
-          path: ./coverage
+          path: |
+            ./coverage
+            ./coverage/**
+
