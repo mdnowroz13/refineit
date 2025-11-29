@@ -6,13 +6,14 @@ import color from 'picocolors';
 import Table from 'cli-table3';
 import fs from 'fs/promises';
 import path from 'path';
-import { getFiles } from './utils/scanner.js';
+import { getFilesWithHashes } from './utils/scanner.js';
 import { analyzeCodebase } from './utils/analyzer.js';
 import { fixImports } from './utils/fixer.js';
 import { showBanner, typeWriter, sleep } from './utils/art.js';
 import { isGitClean } from './utils/git.js';
 import { loadConfig } from './utils/config.js';
 import { createBackupRoot, backupFile, listBackups, restoreBackup } from './utils/backup.js';
+import { diffAgainstCache, updateCacheWithHashes, loadLastReport, saveLastReport } from './utils/cache.js';
 
 type CLIArgs = {
     apply?: boolean;
@@ -25,6 +26,7 @@ type CLIArgs = {
     undo?: string | null;
     failOn?: string | null;
     help?: boolean;
+    incremental?: boolean;
 };
 
 function parseArgs(): CLIArgs {
@@ -42,6 +44,7 @@ function parseArgs(): CLIArgs {
         else if (a === 'undo' && argv[i + 1]) out.undo = argv[++i];
         else if (a === '--fail-on' && argv[i + 1]) out.failOn = argv[++i];
         else if (a === '--help' || a === '-h') out.help = true;
+        else if (a === '--incremental' || a === 'incremental') out.incremental = true;
     }
     return out;
 }
@@ -50,7 +53,7 @@ function printHelp() {
     console.log(`
 RefineIt - CLI
 Usage:
-  refineit [--dry-run] [--apply] [--yes] [--ci] [--export-report path] [--format json|text]
+  refineit [--dry-run] [--apply] [--yes] [--ci] [--export-report path] [--format json|text] [--incremental]
   refineit list-backups
   refineit undo <backupId>
 
@@ -61,6 +64,7 @@ Important flags:
   --ci                 : CI mode (exit codes and JSON output)
   --export-report PATH : write report JSON to path
   --format json|text   : output format
+  --incremental        : return cached report immediately if no files changed
   list-backups         : list available backups
   undo <backupId>      : restore a backup
 `);
@@ -115,14 +119,41 @@ async function main() {
         await sleep(200);
     }
 
-    // scanner + analyzer
+    // scanner + analyzer with incremental caching
     intro(color.bgCyan(color.black(' ✨ RefineIt ')));
     const s = spinner();
     s.start('Scanning repository...');
 
-    const files = await getFiles(config.dirs, config.ignore);
-    const data = await analyzeCodebase(files, config.whitelist);
+    // 1) collect files and compute hashes
+    const { files, hashes } = await getFilesWithHashes(config.dirs, config.ignore);
+
+    // 2) quick cache diff to know changed vs unchanged
+    const { changed } = await diffAgainstCache(hashes);
+
     s.stop('Analysis Complete.');
+
+    // If user requested incremental and nothing changed, return cached report (if present)
+    if (args.incremental && changed.length === 0) {
+        const last: any = await loadLastReport();
+        if (last) {
+            console.log(color.green('◇  No changes detected — returning cached analysis (incremental mode).'));
+            if (args.exportReport) {
+                await fs.writeFile(args.exportReport, JSON.stringify(last, null, 2), 'utf8');
+                console.log(color.green('✅ Saved to ' + args.exportReport));
+            }
+            // If CI and JSON, print JSON
+            if (args.ci && (args.format === 'json' || args.exportReport)) {
+                const json = JSON.stringify({ data: last, score: last.score ?? null }, null, 2);
+                if (args.format === 'json') console.log(json);
+            }
+            process.exit(0);
+        } else {
+            console.log(color.yellow('◇  Incremental requested but no cached report available — running full analysis.'));
+        }
+    }
+
+    // hand-off to analyzer (full file list for correctness)
+    const data = await analyzeCodebase(files, config.whitelist);
 
     // compute score
     let score = 100;
@@ -133,6 +164,20 @@ async function main() {
     score -= (data.totalSecurity * 10);
     score -= (data.unusedImports.length * 2);
     if (score < 0) score = 0;
+
+    // After analysis, update cache with computed hashes and save lastReport
+    try {
+        await updateCacheWithHashes(hashes);
+    } catch (e) {
+        console.warn('Warning: failed to update .refineit cache:', (e as any)?.message || e);
+    }
+    try {
+        // store the full payload + score for incremental reuse
+        const payload: any = { ...data, score };
+        await saveLastReport(payload);
+    } catch (e) {
+        // ignore cache write errors
+    }
 
     let grade = 'A';
     if (score < 90) grade = 'B';

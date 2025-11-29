@@ -21,7 +21,7 @@ export async function createBackupRoot(note) {
     };
     const manifestPath = path.join(rootDir, 'manifest.json');
     await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
-    return { backupId, rootDir, manifestPath };
+    return { backupId, rootDir, manifestPath, manifest };
 }
 async function loadPackageVersion() {
     try {
@@ -41,20 +41,21 @@ export async function writeManifest(manifest, rootDir) {
     await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
 }
 export async function backupFile(originalPath, rootDir, action = 'deleted') {
-    if (!existsSync(originalPath))
-        throw new Error(`original missing: ${originalPath}`);
-    const rel = path.relative(process.cwd(), originalPath).replace(/\\/g, '/');
+    const absOriginal = path.isAbsolute(originalPath) ? originalPath : path.resolve(process.cwd(), originalPath);
+    if (!existsSync(absOriginal))
+        throw new Error(`original missing: ${absOriginal}`);
+    const rel = path.relative(process.cwd(), absOriginal).replace(/\\/g, '/');
     const dest = path.join(rootDir, 'backup', rel);
     const destDir = path.dirname(dest);
     mkdirSync(destDir, { recursive: true });
-    const content = await fs.readFile(originalPath);
+    const content = await fs.readFile(absOriginal);
     await fs.writeFile(dest, content);
     const hash = crypto.createHash('sha256').update(content).digest('hex');
     const entry = {
-        originalPath: path.resolve(originalPath),
+        originalPath: path.resolve(absOriginal),
         backupPath: path.resolve(dest),
         sha256: hash,
-        size: content.length,
+        size: Buffer.isBuffer(content) ? content.length : Buffer.from(String(content)).length,
         action
     };
     const manifestPath = path.join(rootDir, 'manifest.json');
@@ -111,6 +112,10 @@ export async function restoreBackup(backupId) {
         const dst = e.originalPath;
         if (!existsSync(src))
             throw new Error(`backup file missing: ${src}`);
+        const content = await fs.readFile(src);
+        const hash = crypto.createHash('sha256').update(content).digest('hex');
+        if (hash !== e.sha256)
+            throw new Error(`checksum mismatch for ${src} (manifest: ${e.sha256} current: ${hash})`);
         const dstDir = path.dirname(dst);
         mkdirSync(dstDir, { recursive: true });
         await fs.copyFile(src, dst);

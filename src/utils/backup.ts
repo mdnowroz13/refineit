@@ -23,9 +23,11 @@ export interface BackupManifest {
 
 /**
  * Create a deterministic backup root inside repository:
- * <repoRoot>/.refineit/archives/<backupId>
+ *  <repoRoot>/.refineit/archives/<backupId>
+ *
+ * Returns { backupId, rootDir, manifestPath, manifest }
  */
-export async function createBackupRoot(note?: string) {
+export async function createBackupRoot(note?: string | null) {
     const repoRoot = process.cwd();
     const ts = new Date().toISOString().replace(/[:.]/g, '-');
     const short = crypto.randomBytes(3).toString('hex');
@@ -48,7 +50,7 @@ export async function createBackupRoot(note?: string) {
     const manifestPath = path.join(rootDir, 'manifest.json');
     await fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf8');
 
-    return { backupId, rootDir, manifestPath };
+    return { backupId, rootDir, manifestPath, manifest };
 }
 
 async function loadPackageVersion() {
@@ -64,8 +66,8 @@ async function loadPackageVersion() {
 }
 
 /**
- * Writes the provided manifest object to the rootDir/manifest.json.
- * Useful if callers prepare or modify the manifest and want to persist it.
+ * Writes the provided manifest object to rootDir/manifest.json.
+ * This is idempotent and will overwrite.
  */
 export async function writeManifest(manifest: BackupManifest, rootDir: string) {
     const manifestPath = path.join(rootDir, 'manifest.json');
@@ -77,27 +79,27 @@ export async function writeManifest(manifest: BackupManifest, rootDir: string) {
  * originalPath may be absolute or relative; we store backup path relative to archive root.
  */
 export async function backupFile(originalPath: string, rootDir: string, action: 'deleted' | 'modified' = 'deleted'): Promise<BackupEntry> {
-    if (!existsSync(originalPath)) throw new Error(`original missing: ${originalPath}`);
-    const rel = path.relative(process.cwd(), originalPath).replace(/\\/g, '/');
+    const absOriginal = path.isAbsolute(originalPath) ? originalPath : path.resolve(process.cwd(), originalPath);
+    if (!existsSync(absOriginal)) throw new Error(`original missing: ${absOriginal}`);
+    const rel = path.relative(process.cwd(), absOriginal).replace(/\\/g, '/');
     const dest = path.join(rootDir, 'backup', rel);
     const destDir = path.dirname(dest);
     mkdirSync(destDir, { recursive: true });
 
-    const content = await fs.readFile(originalPath);
+    const content = await fs.readFile(absOriginal);
     await fs.writeFile(dest, content);
 
     const hash = crypto.createHash('sha256').update(content).digest('hex');
     const entry: BackupEntry = {
-        originalPath: path.resolve(originalPath),
+        originalPath: path.resolve(absOriginal),
         backupPath: path.resolve(dest),
         sha256: hash,
-        size: content.length,
+        size: Buffer.isBuffer(content) ? content.length : Buffer.from(String(content)).length,
         action
     };
 
-    // update manifest
+    // update manifest atomically: read, modify, write
     const manifestPath = path.join(rootDir, 'manifest.json');
-    // If manifest missing, create one
     if (!existsSync(manifestPath)) {
         const baseManifest: BackupManifest = {
             backupId: path.basename(rootDir),
@@ -145,6 +147,8 @@ export async function listBackups() {
 /**
  * Restore a backup by id: copies files from backup path to original path.
  * Returns list of restored files.
+ *
+ * This validates manifest entries checksums before restoring and throws if mismatch.
  */
 export async function restoreBackup(backupId: string) {
     const repoRoot = process.cwd();
@@ -159,8 +163,14 @@ export async function restoreBackup(backupId: string) {
     for (const e of mf.entries) {
         const src = e.backupPath;
         const dst = e.originalPath;
-        // ensure source exists
+
         if (!existsSync(src)) throw new Error(`backup file missing: ${src}`);
+
+        // validate checksum
+        const content = await fs.readFile(src);
+        const hash = crypto.createHash('sha256').update(content).digest('hex');
+        if (hash !== e.sha256) throw new Error(`checksum mismatch for ${src} (manifest: ${e.sha256} current: ${hash})`);
+
         const dstDir = path.dirname(dst);
         mkdirSync(dstDir, { recursive: true });
         await fs.copyFile(src, dst);

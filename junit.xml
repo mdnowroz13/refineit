@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="4" failures="0" errors="0" time="1.673">
-  <testsuite name="tsconfig-resolver" errors="0" failures="0" skipped="0" timestamp="2025-11-29T08:15:40" time="0.416" tests="2">
-    <testcase classname="tsconfig-resolver getCandidatesForImport returns candidates for tsconfig paths and relative paths" name="tsconfig-resolver getCandidatesForImport returns candidates for tsconfig paths and relative paths" time="0.005">
+<testsuites name="jest tests" tests="5" failures="0" errors="0" time="1.178">
+  <testsuite name="analyzer (basic)" errors="0" failures="0" skipped="0" timestamp="2025-11-29T10:32:49" time="0.766" tests="1">
+    <testcase classname="analyzer (basic) detects dead files, todos and duplicates" name="analyzer (basic) detects dead files, todos and duplicates" time="0.319">
+    </testcase>
+  </testsuite>
+  <testsuite name="fixer - import cleanup" errors="0" failures="0" skipped="0" timestamp="2025-11-29T10:32:50" time="0.09" tests="1">
+    <testcase classname="fixer - import cleanup removes unused named imports and preserves used ones" name="fixer - import cleanup removes unused named imports and preserves used ones" time="0.01">
+    </testcase>
+  </testsuite>
+  <testsuite name="backup util" errors="0" failures="0" skipped="0" timestamp="2025-11-29T10:32:50" time="0.053" tests="1">
+    <testcase classname="backup util create backup and restore files" name="backup util create backup and restore files" time="0.021">
+    </testcase>
+  </testsuite>
+  <testsuite name="tsconfig-resolver" errors="0" failures="0" skipped="0" timestamp="2025-11-29T10:32:50" time="0.035" tests="2">
+    <testcase classname="tsconfig-resolver getCandidatesForImport returns candidates for tsconfig paths and relative paths" name="tsconfig-resolver getCandidatesForImport returns candidates for tsconfig paths and relative paths" time="0.002">
     </testcase>
     <testcase classname="tsconfig-resolver resolveImportWithTsConfig resolves when fileLookup includes candidate" name="tsconfig-resolver resolveImportWithTsConfig resolves when fileLookup includes candidate" time="0.001">
-    </testcase>
-  </testsuite>
-  <testsuite name="fixer - import cleanup" errors="0" failures="0" skipped="0" timestamp="2025-11-29T08:15:40" time="0.657" tests="1">
-    <testcase classname="fixer - import cleanup removes unused named imports and preserves used ones" name="fixer - import cleanup removes unused named imports and preserves used ones" time="0.018">
-    </testcase>
-  </testsuite>
-  <testsuite name="analyzer (basic)" errors="0" failures="0" skipped="0" timestamp="2025-11-29T08:15:40" time="0.979" tests="1">
-    <testcase classname="analyzer (basic) detects dead files, todos and duplicates" name="analyzer (basic) detects dead files, todos and duplicates" time="0.308">
     </testcase>
   </testsuite>
 </testsuites>
