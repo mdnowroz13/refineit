@@ -1,0 +1,63 @@
+{
+  "totalTodos": 4,
+  "totalSecurity": 1,
+  "largeFiles": 0,
+  "deadFiles": [
+    "E:/refineit/demo/temp-unused.ts",
+    "E:/refineit/src/utils/art.ts",
+    "E:/refineit/src/utils/backup.ts",
+    "E:/refineit/src/utils/cache.ts",
+    "E:/refineit/src/utils/fixer.ts",
+    "E:/refineit/src/utils/git.ts",
+    "E:/refineit/src/utils/hash.ts",
+    "E:/refineit/src/utils/scanner.ts",
+    "E:/refineit/src/utils/tsconfig-resolver.ts",
+    "E:/refineit/src/utils/worker-scanner.ts"
+  ],
+  "duplicates": [],
+  "duplicatesCount": 0,
+  "unusedImports": [],
+  "detailedIssues": [
+    {
+      "file": "E:/refineit/src/utils/analyzer.ts",
+      "issues": [
+        "🔒 Security Risk"
+      ]
+    },
+    {
+      "file": "E:/refineit/src/utils/analyzer.ts",
+      "issues": [
+        "@refineit-keep"
+      ]
+    },
+    {
+      "file": "E:\\refineit\\src\\utils\\analyzer.ts",
+      "issues": [
+        "@refineit-keep"
+      ]
+    },
+    {
+      "file": "src/utils/analyzer.ts",
+      "issues": [
+        "@refineit-keep"
+      ]
+    },
+    {
+      "file": "src\\utils\\analyzer.ts",
+      "issues": [
+        "@refineit-keep"
+      ]
+    },
+    {
+      "file": "analyzer.ts",
+      "issues": [
+        "@refineit-keep"
+      ]
+    }
+  ],
+  "cycles": [],
+  "debug": {
+    "unresolvedImports": 84,
+    "usageDecisions": 104
+  }
+}
