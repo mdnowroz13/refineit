@@ -1,6 +1,6 @@
 {
   "name": "refineit",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Simplify your JS/TS codebase by automatically removing dead files and imports, saving you time and reducing clutter.",
   "license": "MIT",
   "repository": {
