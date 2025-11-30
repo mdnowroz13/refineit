@@ -1,2 +1,2 @@
-﻿/** temp demo file — purposely unused */
-export const THIS_IS_UNUSED_FOR_REFINEIT = 42;
+﻿// Temporary file to trigger RefineIt Auto-PR
+export const DEAD_CODE_EXPORT = 1;
