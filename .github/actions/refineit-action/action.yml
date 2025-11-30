@@ -94,19 +94,27 @@ runs:
         fi
         BASE_BRANCH="main"
 
-        # Authenticated remote for pushing
+        # Set authenticated remote url first
         REMOTE_URL="https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}"
         git remote set-url origin "$REMOTE_URL"
 
-        # Fetch fresh refs
-        git fetch --no-tags --prune origin "$BASE_BRANCH":"$BASE_BRANCH" || true
-        git fetch origin "$TARGET_BRANCH" || true
+        # Fetch remote refs (do NOT fetch into local checked-out branch)
+        # Fetch the base and target branch refs from remote without updating local HEAD
+        git fetch --no-tags origin "$BASE_BRANCH" || true
+        git fetch --no-tags origin "$TARGET_BRANCH" || true
 
-        # Create fresh branch from origin/main
+        # Create fresh branch from origin/$BASE_BRANCH (safe even if main is checked out)
         if git show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
           git branch -D "$TARGET_BRANCH"
         fi
-        git checkout -b "$TARGET_BRANCH" "origin/$BASE_BRANCH"
+
+        # ensure we have origin/$BASE_BRANCH; fallback to main if missing
+        if git ls-remote --exit-code --heads origin "$BASE_BRANCH" >/dev/null 2>&1; then
+          git checkout -b "$TARGET_BRANCH" "origin/$BASE_BRANCH"
+        else
+          # fallback: create branch from current HEAD (best-effort)
+          git checkout -b "$TARGET_BRANCH"
+        fi
 
         # Commit any changes made by refineit (if present)
         if [ -n "$(git status --porcelain)" ]; then
