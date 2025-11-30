@@ -57,15 +57,10 @@ runs:
         # Force remove ephemeral/CI build artifacts to avoid "dirty workspace"
         rm -rf dist *.tsbuildinfo refineit-report.json refineit-debug.json || true
 
-        # Clean any local untracked files (safe best-effort)
-        git clean -fdx || true
-        git reset --hard || true
-
         echo "Running: npx refineit ${{ inputs.args }}"
         # Run refineit but don't fail the whole step (we want to always upload artifacts)
         npx refineit ${{ inputs.args }} || true
       shell: bash
-
     - name: Upload report artifacts
       if: always()
       uses: actions/upload-artifact@v4
