@@ -41,7 +41,6 @@ runs:
       run: |
         if [ -f package.json ]; then
           npm ci --silent --no-audit --no-fund
-          # We build, but we will clean up the mess right after!
           npm run build
         fi
       shell: bash
@@ -51,13 +50,10 @@ runs:
       run: |
         set -e
         
-        # --- THE MAGIC CLEANUP STEP ---
-        echo "✨ FORCE CLEANING WORKSPACE BEFORE SCAN..."
+        # Cleanup step to ensure the workspace is clean before the analysis
         rm -rf dist *.tsbuildinfo refineit-report.json refineit-debug.json || true
         git checkout .
-        echo "✨ WORKSPACE IS NOW CLEAN"
-        # -----------------------------
-
+        
         echo "Running: npx refineit ${{ inputs.args }}"
         npx refineit ${{ inputs.args }} || true
       shell: bash
@@ -76,28 +72,46 @@ runs:
       if: inputs.create-pr == 'true' && inputs.push_token != ''
       run: |
         set -e
+        
+        # Check if the --apply flag is present to ensure safety
         echo "Verifying --apply present in args"
         echo "${{ inputs.args }}" | grep -q -- '--apply' || (echo "Refuse: --apply not present. Aborting." && exit 1)
 
-        BRANCH="${{ inputs.push-branch }}"
-        if [ -z "$BRANCH" ]; then
-          BRANCH="refineit/auto-fixes-${GITHUB_RUN_ID}"
-        fi
-
+        # 1. Configuration 
         git config user.name "refineit-bot"
-        git config user.email "refineit-bot@users.noreply.github.com"
+        git config user.email "ci@refineit.local" # Use dedicated bot email
+        
+        TARGET_BRANCH="refineit/auto-fixes"
+        BASE_BRANCH="main"
+        
+        # Define the authenticated URL for pushing
+        REMOTE_URL="https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}"
+        git remote set-url origin "$REMOTE_URL"
 
-        git checkout -b "$BRANCH"
-        git add -A
-        if git diff --cached --quiet; then
-          echo "No changes to commit."
-          exit 0
+        # 2. Preparation: Ensure we are starting from the latest base branch
+        git fetch origin $BASE_BRANCH:$BASE_BRANCH
+        git fetch origin "$TARGET_BRANCH" || true
+        
+        # 3. Create/Reset the Branch
+        # Force delete local branch if it exists, then check out from the remote base
+        if git show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
+          git branch -D "$TARGET_BRANCH"
         fi
-        git commit -m "refineit: apply suggested fixes"
-        
-        git push "https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}" "HEAD:$BRANCH"
-        
-        PR_BODY='{"title":"refineit: suggested import fixes","head":"'"$BRANCH"'","base":"'"${GITHUB_REF##refs/heads/}"'","body":"Automated fixes."}'
+        git checkout -b "$TARGET_BRANCH" "origin/$BASE_BRANCH"
+
+        # 4. Commit Changes (Files modified by 'npx refineit --apply' earlier)
+        # This step commits the changes applied in the previous analysis step.
+        if [ -n "$(git status --porcelain)" ]; then
+          git add -A
+          git commit -m "refineit: apply suggested fixes"
+        fi
+
+        # 5. Push Safely (Fixes "non-fast-forward" error)
+        # --force-with-lease pushes only if the remote branch hasn't been updated unexpectedly.
+        git push --set-upstream origin "$TARGET_BRANCH" --force-with-lease
+
+        # 6. Create PR (Only if the push succeeded)
+        PR_BODY='{"title":"refineit: suggested import fixes","head":"'"$TARGET_BRANCH"'","base":"'"$BASE_BRANCH"'","body":"Automated fixes."}'
         curl -s -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
           https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" > /dev/null
       shell: bash
