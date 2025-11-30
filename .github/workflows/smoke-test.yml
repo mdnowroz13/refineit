@@ -33,15 +33,18 @@ jobs:
 
       - name: Smoke install and run package in temp project
         run: |
+          # 1. Save the current folder (where the .tgz file is)
+          PROJECT_ROOT=$(pwd)
+          
+          # 2. Create and move to a temp folder
           TMPDIR=$(mktemp -d)
           cd $TMPDIR
           mkdir test-app && cd test-app
           npm init -y
-          # install the package tarball from repo root
-          cp ../../*.tgz .
-          npm install ../*.tgz
           
-          # run basic smoke command (CLI help check)
-          # We use || true to ensure it doesn't crash the build if help text differs
+          # 3. Install the package using the saved absolute path
+          npm install "$PROJECT_ROOT"/*.tgz
+          
+          # 4. Run basic smoke command
           npx refineit --help || true
         working-directory: ${{ github.workspace }}
