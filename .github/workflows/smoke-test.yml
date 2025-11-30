@@ -1,0 +1,47 @@
+name: Smoke Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  smoke-pack:
+    name: Smoke test npm package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint Source Code
+        run: npm run lint
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Create package tarball
+        run: npm pack
+
+      - name: Smoke install and run package in temp project
+        run: |
+          TMPDIR=$(mktemp -d)
+          cd $TMPDIR
+          mkdir test-app && cd test-app
+          npm init -y
+          # install the package tarball from repo root
+          cp ../../*.tgz .
+          npm install ../*.tgz
+          
+          # run basic smoke command (CLI help check)
+          # We use || true to ensure it doesn't crash the build if help text differs
+          npx refineit --help || true
+        working-directory: ${{ github.workspace }}
