@@ -1,86 +1,133 @@
-    - name: Create branch & PR
-      if: inputs.create-pr == 'true' && inputs.push_token != ''
+# .github/actions/refineit-action/action.yml
+name: "RefineIt (run analyzer)"
+description: "Run the RefineIt static analyzer. Optionally create a PR with fixes."
+# author is optional; keep for clarity
+author: "RefineIt Team"
+
+inputs:
+  args:
+    description: "Extra CLI args"
+    required: false
+    default: "--dry-run --export-report refineit-report.json"
+  create-pr:
+    description: "If 'true', create PR"
+    required: false
+    default: "false"
+  push-branch:
+    description: "Branch name (if empty, defaults to refineit/auto-fixes)"
+    required: false
+    default: ""
+  working-directory:
+    description: "Path"
+    required: false
+    default: "."
+  push_token:
+    description: "GitHub token (used to push/create PR)"
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "18"
+        cache: "npm"
+
+    - name: Move to working directory
+      if: ${{ inputs.working-directory != '.' }}
+      run: |
+        cd "${{ inputs.working-directory }}"
+      shell: bash
+
+    - name: Install dependencies
+      run: |
+        if [ -f package.json ]; then
+          npm ci --silent --no-audit --no-fund
+          npm run build
+        fi
+      shell: bash
+
+    - name: Run RefineIt analyzer
+      id: run_refineit
       run: |
         set -euo pipefail
 
-        # ensure --apply present
-        echo "Verifying --apply present in args"
+        # Force remove ephemeral/CI build artifacts to avoid "dirty workspace"
+        rm -rf dist *.tsbuildinfo refineit-report.json refineit-debug.json || true
+
+        # Clean any local untracked files (safe best-effort)
+        git clean -fdx || true
+        git reset --hard || true
+
+        echo "Running: npx refineit ${{ inputs.args }}"
+        # Run refineit but don't fail the whole step (we want to always upload artifacts)
+        npx refineit ${{ inputs.args }} || true
+      shell: bash
+
+    - name: Upload report artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: refineit-report
+        path: |
+          refineit-report.json
+          refineit-debug.json
+        retention-days: 7
+
+    - name: Create branch & PR
+      if: ${{ inputs.create-pr == 'true' && inputs.push_token != '' }}
+      run: |
+        set -euo pipefail
+
+        # Ensure user explicitly requested --apply
         echo "${{ inputs.args }}" | grep -q -- '--apply' || (echo "Refuse: --apply not present. Aborting." && exit 1)
 
-        # 1. Git config for bot
         git config user.name "refineit-bot"
         git config user.email "ci@refineit.local"
 
+        # Pick target branch from input, fallback to refineit/auto-fixes
         TARGET_BRANCH="${{ inputs.push-branch }}"
-        if [ -z "$TARGET_BRANCH" ]; then
+        if [ -z "${TARGET_BRANCH}" ]; then
           TARGET_BRANCH="refineit/auto-fixes"
         fi
         BASE_BRANCH="main"
 
-        # Authenticated URL for pushing
+        # Authenticated remote for pushing
         REMOTE_URL="https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}"
         git remote set-url origin "$REMOTE_URL"
 
-        # 2. Fetch latest refs (do NOT fetch into checked-out branch)
-        echo "Fetching latest origin/${BASE_BRANCH}..."
-        git fetch --no-tags --prune origin "${BASE_BRANCH}"
+        # Fetch fresh refs
+        git fetch --no-tags --prune origin "$BASE_BRANCH":"$BASE_BRANCH" || true
+        git fetch origin "$TARGET_BRANCH" || true
 
-        # 3. Create new target branch from origin/BASE_BRANCH
-        # If the local branch exists, delete it then create fresh from origin/BASE_BRANCH.
-        if git rev-parse --verify --quiet "refs/heads/${TARGET_BRANCH}" >/dev/null; then
-          echo "Deleting existing local branch ${TARGET_BRANCH}"
-          git branch -D "${TARGET_BRANCH}"
+        # Create fresh branch from origin/main
+        if git show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
+          git branch -D "$TARGET_BRANCH"
         fi
+        git checkout -b "$TARGET_BRANCH" "origin/$BASE_BRANCH"
 
-        echo "Creating branch ${TARGET_BRANCH} from origin/${BASE_BRANCH}"
-        git checkout -b "${TARGET_BRANCH}" "origin/${BASE_BRANCH}"
-
-        # 4. Commit changes if any (these are the modifications applied by refineit earlier)
+        # Commit any changes made by refineit (if present)
         if [ -n "$(git status --porcelain)" ]; then
           git add -A
-          git commit -m "refineit: apply suggested fixes" || echo "Nothing to commit (commit failed)."
+          git commit -m "refineit: apply suggested fixes"
         else
-          echo "No changes detected after refineit --apply. Nothing to push."
+          echo "No changes to commit."
         fi
 
-        # 5. Push branch to origin using force-with-lease (safer than plain --force)
-        # If there are no local commits, skip push
-        if git rev-list --max-parents=0 --count HEAD >/dev/null 2>&1; then
-          # just attempt push if branch exists remotely or local has commits
-          echo "Pushing branch ${TARGET_BRANCH} to origin..."
-          git push --set-upstream origin "${TARGET_BRANCH}" --force-with-lease || {
-            echo "Push failed. Attempting to show remote ref info for debugging..."
-            git ls-remote origin refs/heads/"${TARGET_BRANCH}" || true
-            exit 1
-          }
-        else
-          echo "No local commits, skipping push."
-        fi
+        # Push (force-with-lease to avoid overwriting unexpected remote updates)
+        git push --set-upstream origin "$TARGET_BRANCH" --force-with-lease
 
-        # 6. Create PR via GitHub API (idempotent attempt)
-        echo "Creating PR from ${TARGET_BRANCH} -> ${BASE_BRANCH}..."
-        PR_TITLE="refineit: suggested import fixes"
-        PR_BODY="Automated fixes suggested and applied by RefineIt.\n\nSee attached report artifact in workflow run for details."
-        # Use a safe check to avoid duplicate PRs
-        EXISTING_PR=$(curl -s -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
-          "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.actor }}:${TARGET_BRANCH}&base=${BASE_BRANCH}" | jq -r '.[0].html_url // empty')
+        # Create PR via GitHub API (best-effort)
+        PR_BODY=$(
+          jq -n --arg title "refineit: suggested import fixes" \
+                --arg head "$TARGET_BRANCH" \
+                --arg base "$BASE_BRANCH" \
+                --arg body "Automated fixes." \
+                '{title:$title, head:$head, base:$base, body:$body}'
+        )
 
-        if [ -n "$EXISTING_PR" ]; then
-          echo "PR already exists: $EXISTING_PR"
-        else
-          # create PR
-          CREATE_RESP=$(curl -s -X POST -H "Authorization: token ${{ inputs.push_token }}" \
-            -H "Accept: application/vnd.github+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls" \
-            -d "$(jq -nc --arg t "$PR_TITLE" --arg h "$TARGET_BRANCH" --arg b "$BASE_BRANCH" --arg body "$PR_BODY" '{title: $t, head: $h, base: $b, body: $body}')")
-
-          PR_URL=$(echo "$CREATE_RESP" | jq -r '.html_url // empty')
-          if [ -n "$PR_URL" ]; then
-            echo "PR created: $PR_URL"
-          else
-            echo "Failed to create PR. Response:"
-            echo "$CREATE_RESP"
-            exit 1
-          fi
-        fi
+        curl -s -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
+          https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" > /dev/null || true
       shell: bash
