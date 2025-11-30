@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-30T06:59:14.965Z",
+  "timestamp": "2025-11-30T14:45:50.729Z",
   "unresolvedImportsDebug": [
     {
       "importer": "/home/runner/work/refineit/refineit/__tests__/analyzer.test.js",
@@ -2951,7 +2951,7 @@
       "fallbackTextual": false
     }
   ],
-  "fileCount": 19,
+  "fileCount": 23,
   "lookedUpFiles": [
     "/home/runner/work/refineit/refineit/__tests__/analyzer.test.js",
     "/home/runner/work/refineit/refineit/__tests__/analyzer.test",
@@ -2964,6 +2964,14 @@
     "/home/runner/work/refineit/refineit/__tests__/tsconfig-resolver.test.js",
     "/home/runner/work/refineit/refineit/__tests__/tsconfig-resolver.test",
     "/home/runner/work/refineit/refineit/__tests__/tsconfig-resolver.test.ts",
+    "/home/runner/work/refineit/refineit/demo-unused-for-refineit.ts",
+    "/home/runner/work/refineit/refineit/demo-unused-for-refineit",
+    "/home/runner/work/refineit/refineit/demo/temp-unused.ts",
+    "/home/runner/work/refineit/refineit/demo/temp-unused",
+    "/home/runner/work/refineit/refineit/src/demo-recording.ts",
+    "/home/runner/work/refineit/refineit/src/demo-recording",
+    "/home/runner/work/refineit/refineit/src/demo-temp.ts",
+    "/home/runner/work/refineit/refineit/src/demo-temp",
     "/home/runner/work/refineit/refineit/src/index.ts",
     "/home/runner/work/refineit/refineit/src/index",
     "/home/runner/work/refineit/refineit/src/utils/analyzer.ts",
