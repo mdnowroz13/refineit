@@ -1,0 +1,72 @@
+{
+  "backupId": "backup-2025-11-30T06-59-14-977Z-5729d2",
+  "createdAt": "2025-11-30T06:59:14.977Z",
+  "toolVersion": "1.0.3",
+  "cwd": "/home/runner/work/refineit/refineit",
+  "entries": [
+    {
+      "originalPath": "/home/runner/work/refineit/refineit/src/utils/art.ts",
+      "backupPath": "/home/runner/work/refineit/refineit/.refineit/archives/backup-2025-11-30T06-59-14-977Z-5729d2/backup/src/utils/art.ts",
+      "sha256": "1a66aaae37102c546e32a46f932d6cad3f0788c9d91640cb0c3e12c45e308f14",
+      "size": 727,
+      "action": "deleted"
+    },
+    {
+      "originalPath": "/home/runner/work/refineit/refineit/src/utils/backup.ts",
+      "backupPath": "/home/runner/work/refineit/refineit/.refineit/archives/backup-2025-11-30T06-59-14-977Z-5729d2/backup/src/utils/backup.ts",
+      "sha256": "a014713d907cc48664cf3bda584d4d23a81fce2c43aff61c099171100c415ab2",
+      "size": 6496,
+      "action": "deleted"
+    },
+    {
+      "originalPath": "/home/runner/work/refineit/refineit/src/utils/cache.ts",
+      "backupPath": "/home/runner/work/refineit/refineit/.refineit/archives/backup-2025-11-30T06-59-14-977Z-5729d2/backup/src/utils/cache.ts",
+      "sha256": "ce937b23cc3c8a0e2213d4b736c97b50e71914870a92ecdd01a4bec6b8e86af4",
+      "size": 2182,
+      "action": "deleted"
+    },
+    {
+      "originalPath": "/home/runner/work/refineit/refineit/src/utils/fixer.ts",
+      "backupPath": "/home/runner/work/refineit/refineit/.refineit/archives/backup-2025-11-30T06-59-14-977Z-5729d2/backup/src/utils/fixer.ts",
+      "sha256": "25d26d177540306d44cdcaf329d86c233e62e68649324a5af863288b1f8cbf75",
+      "size": 4111,
+      "action": "deleted"
+    },
+    {
+      "originalPath": "/home/runner/work/refineit/refineit/src/utils/git.ts",
+      "backupPath": "/home/runner/work/refineit/refineit/.refineit/archives/backup-2025-11-30T06-59-14-977Z-5729d2/backup/src/utils/git.ts",
+      "sha256": "cf770f5c61657a3fef32d06b1593d0d0da9fe2066fc572c793dbe649b5340bd7",
+      "size": 451,
+      "action": "deleted"
+    },
+    {
+      "originalPath": "/home/runner/work/refineit/refineit/src/utils/hash.ts",
+      "backupPath": "/home/runner/work/refineit/refineit/.refineit/archives/backup-2025-11-30T06-59-14-977Z-5729d2/backup/src/utils/hash.ts",
+      "sha256": "ab4c03508dc53702ed504b3f65d7aaffce80061e0c72eb370018e690289f2268",
+      "size": 205,
+      "action": "deleted"
+    },
+    {
+      "originalPath": "/home/runner/work/refineit/refineit/src/utils/scanner.ts",
+      "backupPath": "/home/runner/work/refineit/refineit/.refineit/archives/backup-2025-11-30T06-59-14-977Z-5729d2/backup/src/utils/scanner.ts",
+      "sha256": "e51738877cbbf71eef5883689ca55638f7a6adc9a1caf5231129b73124b8923a",
+      "size": 2789,
+      "action": "deleted"
+    },
+    {
+      "originalPath": "/home/runner/work/refineit/refineit/src/utils/tsconfig-resolver.ts",
+      "backupPath": "/home/runner/work/refineit/refineit/.refineit/archives/backup-2025-11-30T06-59-14-977Z-5729d2/backup/src/utils/tsconfig-resolver.ts",
+      "sha256": "c3ef1896f2cd029649bb8e73e07d00b603fefd8f503c7cd0a0c51db6f76d254f",
+      "size": 6831,
+      "action": "deleted"
+    },
+    {
+      "originalPath": "/home/runner/work/refineit/refineit/src/utils/worker-scanner.ts",
+      "backupPath": "/home/runner/work/refineit/refineit/.refineit/archives/backup-2025-11-30T06-59-14-977Z-5729d2/backup/src/utils/worker-scanner.ts",
+      "sha256": "df20d6598649ef9812f1a4f6973107d102257ee2faaed6872c580f7e2076f67b",
+      "size": 2712,
+      "action": "deleted"
+    }
+  ],
+  "note": "auto-apply"
+}
