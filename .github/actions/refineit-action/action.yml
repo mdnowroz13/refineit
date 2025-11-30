@@ -80,62 +80,56 @@ runs:
       if: ${{ inputs.create-pr == 'true' && inputs.push_token != '' }}
       run: |
         set -euo pipefail
-
-        # Ensure user explicitly requested --apply
+        # Ensure --apply present
         echo "${{ inputs.args }}" | grep -q -- '--apply' || (echo "Refuse: --apply not present. Aborting." && exit 1)
 
         git config user.name "refineit-bot"
         git config user.email "ci@refineit.local"
 
-        # Pick target branch from input, fallback to refineit/auto-fixes
+        # Configure branches
         TARGET_BRANCH="${{ inputs.push-branch }}"
-        if [ -z "${TARGET_BRANCH}" ]; then
+        if [ -z "$TARGET_BRANCH" ]; then
           TARGET_BRANCH="refineit/auto-fixes"
         fi
         BASE_BRANCH="main"
 
-        # Set authenticated remote url first
+        # Set authenticated remote
         REMOTE_URL="https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}"
         git remote set-url origin "$REMOTE_URL"
 
-        # Fetch remote refs (do NOT fetch into local checked-out branch)
-        # Fetch the base and target branch refs from remote without updating local HEAD
+        # Fetch remote refs safely (do not fetch into local checked out branch)
         git fetch --no-tags origin "$BASE_BRANCH" || true
         git fetch --no-tags origin "$TARGET_BRANCH" || true
 
-        # Create fresh branch from origin/$BASE_BRANCH (safe even if main is checked out)
-        if git show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
-          git branch -D "$TARGET_BRANCH"
-        fi
-
-        # ensure we have origin/$BASE_BRANCH; fallback to main if missing
+        # Create fresh branch from origin/$BASE_BRANCH if available
         if git ls-remote --exit-code --heads origin "$BASE_BRANCH" >/dev/null 2>&1; then
+          # Safe branch creation
           git checkout -b "$TARGET_BRANCH" "origin/$BASE_BRANCH"
         else
-          # fallback: create branch from current HEAD (best-effort)
+          # Fallback: create branch from current HEAD (origin/main)
           git checkout -b "$TARGET_BRANCH"
         fi
 
-        # Commit any changes made by refineit (if present)
+        # Commit changes if present
         if [ -n "$(git status --porcelain)" ]; then
           git add -A
           git commit -m "refineit: apply suggested fixes"
+
+          echo "Changes detected and committed. Pushing branch..."
+          # Push and create PR
+          git push --set-upstream origin "$TARGET_BRANCH" --force-with-lease
+
+          # Build JSON payload without relying on jq
+          read -r -d '' PR_BODY <<'JSON' || true
+{"title":"refineit: suggested fix applied","head":"'"$TARGET_BRANCH"'","base":"'"$BASE_BRANCH"'","body":"Automated fixes from RefineIt."}
+JSON
+
+          echo "Attempting to create Pull Request (response follows) ..."
+          # Use curl silent+show-error (sS); this prints the API response (for debug) but hides headers/secrets.
+          RESPONSE=$(curl -sS -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" || true)
+          echo "PR API response: $RESPONSE"
         else
-          echo "No changes to commit."
+          echo "No changes to commit. Skipping branch push and PR creation."
         fi
-
-        # Push (force-with-lease to avoid overwriting unexpected remote updates)
-        git push --set-upstream origin "$TARGET_BRANCH" --force-with-lease
-
-        # Create PR via GitHub API (best-effort)
-        PR_BODY=$(
-          jq -n --arg title "refineit: suggested import fixes" \
-                --arg head "$TARGET_BRANCH" \
-                --arg base "$BASE_BRANCH" \
-                --arg body "Automated fixes." \
-                '{title:$title, head:$head, base:$base, body:$body}'
-        )
-
-        curl -s -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
-          https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" > /dev/null || true
       shell: bash
