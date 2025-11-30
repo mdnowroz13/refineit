@@ -12,6 +12,7 @@
   },
   "include": [
     "src/**/*",
-    "__tests__"
+    "__tests__",
+    "demo-unused-for-refineit.ts"
   ]
 }
