@@ -23,7 +23,3 @@ jobs:
         with:
           args: '--dry-run --export-report refineit-report.json'
           create-pr: 'false'
-          # THIS IS NEW: It fixes the "secrets" error
-          push_token: ${{ secrets.PUSH_TOKEN }}
-
-      
