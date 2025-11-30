@@ -64,7 +64,7 @@ runs:
         echo "Running: npx refineit ${{ inputs.args }}"
         # Run refineit but don't fail the whole step (we want to always upload artifacts)
         npx refineit ${{ inputs.args }} || true
-      shell: bash
+      shell: bash  # <--- THIS IS THE MISSING LINE THAT CAUSES THE ERROR
 
     - name: Upload report artifacts
       if: always()
