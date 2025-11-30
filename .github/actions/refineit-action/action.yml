@@ -1,42 +1,44 @@
 # .github/actions/refineit-action/action.yml
 name: "RefineIt (run analyzer)"
 description: "Run the RefineIt static analyzer. Optionally create a PR with fixes."
+# author is optional; keep for clarity
 author: "RefineIt Team"
 
 inputs:
   args:
     description: "Extra CLI args"
     required: false
-    default: '--dry-run --export-report refineit-report.json'
+    default: "--dry-run --export-report refineit-report.json"
   create-pr:
     description: "If 'true', create PR"
     required: false
-    default: 'false'
+    default: "false"
   push-branch:
-    description: "Branch name"
+    description: "Branch name (if empty, defaults to refineit/auto-fixes)"
     required: false
-    default: ''
+    default: ""
   working-directory:
     description: "Path"
     required: false
-    default: '.'
+    default: "."
   push_token:
-    description: "GitHub token"
+    description: "GitHub token (used to push/create PR)"
     required: false
-    default: ''
+    default: ""
 
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
-        cache: 'npm'
+        node-version: "18"
+        cache: "npm"
 
     - name: Move to working directory
       if: ${{ inputs.working-directory != '.' }}
-      run: cd "${{ inputs.working-directory }}"
+      run: |
+        cd "${{ inputs.working-directory }}"
       shell: bash
 
     - name: Install dependencies
@@ -50,14 +52,17 @@ runs:
     - name: Run RefineIt analyzer
       id: run_refineit
       run: |
-        set -e
+        set -euo pipefail
 
         # Force remove ephemeral/CI build artifacts to avoid "dirty workspace"
         rm -rf dist *.tsbuildinfo refineit-report.json refineit-debug.json || true
-        git checkout -- . || true
+
+        # Clean any local untracked files (safe best-effort)
+        git clean -fdx || true
+        git reset --hard || true
 
         echo "Running: npx refineit ${{ inputs.args }}"
-        # Run but do not fail the whole job if refineit returns non-zero; capture exit code
+        # Run refineit but don't fail the whole step (we want to always upload artifacts)
         npx refineit ${{ inputs.args }} || true
       shell: bash
 
@@ -74,22 +79,27 @@ runs:
     - name: Create branch & PR
       if: ${{ inputs.create-pr == 'true' && inputs.push_token != '' }}
       run: |
-        set -e
+        set -euo pipefail
 
-        # Safety: require --apply
+        # Ensure user explicitly requested --apply
         echo "${{ inputs.args }}" | grep -q -- '--apply' || (echo "Refuse: --apply not present. Aborting." && exit 1)
 
         git config user.name "refineit-bot"
         git config user.email "ci@refineit.local"
 
-        TARGET_BRANCH="${{ inputs.push-branch || 'refineit/auto-fixes' }}"
+        # Pick target branch from input, fallback to refineit/auto-fixes
+        TARGET_BRANCH="${{ inputs.push-branch }}"
+        if [ -z "${TARGET_BRANCH}" ]; then
+          TARGET_BRANCH="refineit/auto-fixes"
+        fi
         BASE_BRANCH="main"
 
+        # Authenticated remote for pushing
         REMOTE_URL="https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}"
         git remote set-url origin "$REMOTE_URL"
 
         # Fetch fresh refs
-        git fetch origin "$BASE_BRANCH":"$BASE_BRANCH" || true
+        git fetch --no-tags --prune origin "$BASE_BRANCH":"$BASE_BRANCH" || true
         git fetch origin "$TARGET_BRANCH" || true
 
         # Create fresh branch from origin/main
@@ -110,7 +120,14 @@ runs:
         git push --set-upstream origin "$TARGET_BRANCH" --force-with-lease
 
         # Create PR via GitHub API (best-effort)
-        PR_BODY='{"title":"refineit: suggested import fixes","head":"'"$TARGET_BRANCH"'","base":"'"$BASE_BRANCH"'","body":"Automated fixes."}'
+        PR_BODY=$(
+          jq -n --arg title "refineit: suggested import fixes" \
+                --arg head "$TARGET_BRANCH" \
+                --arg base "$BASE_BRANCH" \
+                --arg body "Automated fixes." \
+                '{title:$title, head:$head, base:$base, body:$body}'
+        )
+
         curl -s -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
-          https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" > /dev/null
+          https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" > /dev/null || true
       shell: bash
