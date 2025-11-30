@@ -1,7 +1,7 @@
-﻿$body = @'
-# .github/actions/refineit-action/action.yml
+﻿# .github/actions/refineit-action/action.yml
 name: "RefineIt (run analyzer)"
 description: "Run the RefineIt static analyzer. Optionally create a PR with fixes."
+# author is optional; keep for clarity
 author: "RefineIt Team"
 
 inputs:
@@ -54,14 +54,15 @@ runs:
       run: |
         set -euo pipefail
 
-        # Remove ephemeral artifacts to avoid "dirty workspace"
+        # Force remove ephemeral/CI build artifacts to avoid "dirty workspace"
         rm -rf dist *.tsbuildinfo refineit-report.json refineit-debug.json || true
 
-        # Best-effort clean
+        # Clean any local untracked files (safe best-effort)
         git clean -fdx || true
         git reset --hard || true
 
         echo "Running: npx refineit ${{ inputs.args }}"
+        # Run refineit but don't fail the whole step (we want to always upload artifacts)
         npx refineit ${{ inputs.args }} || true
       shell: bash
 
@@ -80,48 +81,61 @@ runs:
       run: |
         set -euo pipefail
 
-        # Guard: require --apply when creating PRs
+        # Ensure user explicitly requested --apply
         echo "${{ inputs.args }}" | grep -q -- '--apply' || (echo "Refuse: --apply not present. Aborting." && exit 1)
 
         git config user.name "refineit-bot"
         git config user.email "ci@refineit.local"
 
+        # Pick target branch from input, fallback to refineit/auto-fixes
         TARGET_BRANCH="${{ inputs.push-branch }}"
-        if [ -z "$TARGET_BRANCH" ]; then
+        if [ -z "${TARGET_BRANCH}" ]; then
           TARGET_BRANCH="refineit/auto-fixes"
         fi
         BASE_BRANCH="main"
 
+        # Set authenticated remote url first
         REMOTE_URL="https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}"
         git remote set-url origin "$REMOTE_URL"
 
-        # Fetch remote refs safely
+        # Fetch remote refs (do NOT fetch into local checked-out branch)
+        # Fetch the base and target branch refs from remote without updating local HEAD
         git fetch --no-tags origin "$BASE_BRANCH" || true
         git fetch --no-tags origin "$TARGET_BRANCH" || true
 
-        # Create fresh branch from origin/main if available
+        # Create fresh branch from origin/$BASE_BRANCH (safe even if main is checked out)
+        if git show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
+          git branch -D "$TARGET_BRANCH"
+        fi
+
+        # ensure we have origin/$BASE_BRANCH; fallback to main if missing
         if git ls-remote --exit-code --heads origin "$BASE_BRANCH" >/dev/null 2>&1; then
           git checkout -b "$TARGET_BRANCH" "origin/$BASE_BRANCH"
         else
+          # fallback: create branch from current HEAD (best-effort)
           git checkout -b "$TARGET_BRANCH"
         fi
 
-        # If refineit made changes, commit and push
+        # Commit any changes made by refineit (if present)
         if [ -n "$(git status --porcelain)" ]; then
           git add -A
           git commit -m "refineit: apply suggested fixes"
-
-          git push --set-upstream origin "$TARGET_BRANCH" --force-with-lease
-
-          # Build simple JSON payload and POST to GitHub API
-          PR_BODY='{"title":"refineit: suggested fix applied","head":"'"$TARGET_BRANCH"'","base":"'"$BASE_BRANCH"'","body":"Automated fixes from RefineIt."}'
-          RESPONSE=$(curl -sS -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" || true)
-          echo "PR API response: $RESPONSE"
         else
-          echo "No changes to commit. Skipping branch push and PR creation."
+          echo "No changes to commit."
         fi
-      shell: bash
-'@
-Set-Content -LiteralPath .github/actions/refineit-action/action.yml -Value $body -Encoding UTF8
 
+        # Push (force-with-lease to avoid overwriting unexpected remote updates)
+        git push --set-upstream origin "$TARGET_BRANCH" --force-with-lease
+
+        # Create PR via GitHub API (best-effort)
+        PR_BODY=$(
+          jq -n --arg title "refineit: suggested import fixes" \
+                --arg head "$TARGET_BRANCH" \
+                --arg base "$BASE_BRANCH" \
+                --arg body "Automated fixes." \
+                '{title:$title, head:$head, base:$base, body:$body}'
+        )
+
+        curl -s -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
+          https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" > /dev/null || true
+      shell: bash
