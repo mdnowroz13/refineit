@@ -41,7 +41,7 @@ runs:
       run: |
         if [ -f package.json ]; then
           npm ci --silent --no-audit --no-fund
-          npm run build
+          # We no longer run 'npm run build' here. We move it below.
         fi
       shell: bash
 
@@ -49,13 +49,20 @@ runs:
       id: run_refineit
       run: |
         set -e
+        
+        # --- PRE-RUN CLEANUP AND BUILD ---
+        # 1. Clear any generated/cache files that might interfere with tsc
+        rm -rf dist *.tsbuildinfo || true
+        
+        # 2. Re-run build now that the workspace is clean (This creates the missing .js files)
+        echo "Running npm run build..."
+        npm run build 
 
-        # Cleanup step to ensure the workspace is clean before the analysis
-        rm -rf dist *.tsbuildinfo refineit-report.json refineit-debug.json || true
-        git checkout . || true
-
+        # 3. Final git status cleanup (for package-lock.json)
+        git checkout .
+        # ---------------------------------
+        
         echo "Running: npx refineit ${{ inputs.args }}"
-        # allow refineit to fail without failing the whole action (report will still be uploaded)
         npx refineit ${{ inputs.args }} || true
       shell: bash
 
@@ -72,74 +79,41 @@ runs:
     - name: Create branch & PR
       if: inputs.create-pr == 'true' && inputs.push_token != ''
       run: |
-        set -euo pipefail
-
-        # Ensure --apply is present (safety)
+        set -e
+        
+        # Check if the --apply flag is present to ensure safety
         echo "Verifying --apply present in args"
         echo "${{ inputs.args }}" | grep -q -- '--apply' || (echo "Refuse: --apply not present. Aborting." && exit 1)
 
-        # Git identity (bot)
+        # 1. Configuration 
         git config user.name "refineit-bot"
         git config user.email "ci@refineit.local"
-
-        # Inputs
-        TARGET_BRANCH="${{ inputs.push-branch }}"
-        if [ -z "$TARGET_BRANCH" ]; then
-          TARGET_BRANCH="refineit/auto-fixes"
-        fi
+        
+        TARGET_BRANCH="refineit/auto-fixes"
         BASE_BRANCH="main"
-
-        # Use token-based remote URL for authenticated push
-        REMOTE_URL="https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}.git"
+        
+        # Define the authenticated URL for pushing
+        REMOTE_URL="https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}"
         git remote set-url origin "$REMOTE_URL"
 
-        # Fetch latest refs (do NOT fetch into checked-out main ref)
-        echo "Fetching latest from origin..."
-        git fetch --no-tags --prune origin
+        # 2. Preparation: Ensure we have the latest remote commits
+        git fetch origin $BASE_BRANCH
+        git fetch origin $TARGET_BRANCH || true
 
-        # Create branch from origin/BASE_BRANCH (safe even if local main is checked out)
-        echo "Reset/prepare branch '$TARGET_BRANCH' from origin/$BASE_BRANCH..."
-        if git show-ref --verify --quiet "refs/heads/$TARGET_BRANCH"; then
-          git branch -D "$TARGET_BRANCH"
-        fi
-
-        # Checkout new branch from origin/BASE_BRANCH. If origin/BASE_BRANCH doesn't exist, fallback to local.
-        if git ls-remote --exit-code --heads origin "$BASE_BRANCH" >/dev/null 2>&1; then
-          git checkout -b "$TARGET_BRANCH" "origin/$BASE_BRANCH"
-        else
-          echo "Warning: origin/$BASE_BRANCH not found, checking out local $BASE_BRANCH instead."
-          git fetch origin "$BASE_BRANCH" || true
-          git checkout -b "$TARGET_BRANCH" "$BASE_BRANCH" || git checkout -b "$TARGET_BRANCH"
-        fi
-
-        # Commit any changes produced by `npx refineit --apply` step
+        # 3. Create/Reset the Branch
+        git checkout -b "$TARGET_BRANCH" "origin/$BASE_BRANCH"
+        
+        # 4. Commit Changes (Files modified by 'npx refineit --apply' earlier)
         if [ -n "$(git status --porcelain)" ]; then
           git add -A
-          git commit -m "refineit: apply suggested fixes" || echo "No commit (maybe nothing changed)."
-        else
-          echo "No changes to commit."
+          git commit -m "refineit: apply suggested fixes"
         fi
 
-        # Push branch: use --force-with-lease to avoid overwriting remote unexpectedly.
-        echo "Pushing branch to origin ($TARGET_BRANCH)..."
+        # 5. Push Safely (Fixes "non-fast-forward" error)
         git push --set-upstream origin "$TARGET_BRANCH" --force-with-lease
 
-        # Create PR (idempotent-ish: will error if PR exists — we handle it)
-        echo "Creating Pull Request..."
-        PR_TITLE='refineit: suggested import fixes'
-        PR_BODY='Automated fixes produced by RefineIt. Please review before merging.'
-        CREATE_RESPONSE=$(curl -s -o /dev/stderr -w "%{http_code}" -X POST \
-          -H "Authorization: token ${{ inputs.push_token }}" \
-          -H "Accept: application/vnd.github+json" \
-          https://api.github.com/repos/${{ github.repository }}/pulls \
-          -d "$(jq -n --arg t "$PR_TITLE" --arg h "$TARGET_BRANCH" --arg b "$BASE_BRANCH" --arg body "$PR_BODY" '{title:$t, head:$h, base:$b, body:$body}')" || true)
-
-        # If curl not installed or jq missing, fallback simple POST (ignore errors)
-        if [ -z "$CREATE_RESPONSE" ] || [ "$CREATE_RESPONSE" -eq 0 ]; then
-          # fallback (best-effort)
-          curl -s -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/pulls -d "{\"title\":\"$PR_TITLE\",\"head\":\"$TARGET_BRANCH\",\"base\":\"$BASE_BRANCH\",\"body\":\"$PR_BODY\"}" || true
-        fi
-
-        echo "Done."
+        # 6. Create PR (Only if the push succeeded)
+        PR_BODY='{"title":"refineit: suggested import fixes","head":"'"$TARGET_BRANCH"'","base":"'"$BASE_BRANCH"'","body":"Automated fixes."}'
+        curl -s -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
+          https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" > /dev/null
       shell: bash
