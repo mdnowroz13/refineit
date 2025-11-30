@@ -1,7 +1,6 @@
 # .github/actions/refineit-action/action.yml
 name: "RefineIt (run analyzer)"
 description: "Run the RefineIt static analyzer. Optionally create a PR with fixes."
-# author is optional; keep for clarity
 author: "RefineIt Team"
 
 inputs:
@@ -54,17 +53,17 @@ runs:
       run: |
         set -euo pipefail
 
-        # Force remove ephemeral/CI build artifacts to avoid "dirty workspace"
+        # Remove ephemeral/CI artifacts to avoid dirty-workspace detection
         rm -rf dist *.tsbuildinfo refineit-report.json refineit-debug.json || true
 
-        # Clean any local untracked files (safe best-effort)
+        # Clean untracked files and reset working tree (best-effort)
         git clean -fdx || true
         git reset --hard || true
 
         echo "Running: npx refineit ${{ inputs.args }}"
-        # Run refineit but don't fail the whole step (we want to always upload artifacts)
+        # Run refineit but do not fail the step (we want to upload artifacts)
         npx refineit ${{ inputs.args }} || true
-      shell: bash  # <--- THIS IS THE MISSING LINE THAT CAUSES THE ERROR
+      shell: bash
 
     - name: Upload report artifacts
       if: always()
@@ -80,52 +79,50 @@ runs:
       if: ${{ inputs.create-pr == 'true' && inputs.push_token != '' }}
       run: |
         set -euo pipefail
-        # Ensure --apply present
+
+        # Require --apply for safety
         echo "${{ inputs.args }}" | grep -q -- '--apply' || (echo "Refuse: --apply not present. Aborting." && exit 1)
 
         git config user.name "refineit-bot"
         git config user.email "ci@refineit.local"
 
-        # Configure branches
+        # Determine target branch (fallback to refineit/auto-fixes)
         TARGET_BRANCH="${{ inputs.push-branch }}"
         if [ -z "$TARGET_BRANCH" ]; then
           TARGET_BRANCH="refineit/auto-fixes"
         fi
         BASE_BRANCH="main"
 
-        # Set authenticated remote
+        # Configure authenticated remote (uses the provided push token)
         REMOTE_URL="https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}"
         git remote set-url origin "$REMOTE_URL"
 
-        # Fetch remote refs safely (do not fetch into local checked out branch)
+        # Fetch remote refs safely (do not fetch into local checked-out branch)
         git fetch --no-tags origin "$BASE_BRANCH" || true
         git fetch --no-tags origin "$TARGET_BRANCH" || true
 
-        # Create fresh branch from origin/$BASE_BRANCH if available
+        # Create fresh branch from origin/$BASE_BRANCH if it exists
         if git ls-remote --exit-code --heads origin "$BASE_BRANCH" >/dev/null 2>&1; then
-          # Safe branch creation
           git checkout -b "$TARGET_BRANCH" "origin/$BASE_BRANCH"
         else
-          # Fallback: create branch from current HEAD (origin/main)
           git checkout -b "$TARGET_BRANCH"
         fi
 
-        # Commit changes if present
+        # If there are repository changes (applied by refineit), commit & push them
         if [ -n "$(git status --porcelain)" ]; then
           git add -A
           git commit -m "refineit: apply suggested fixes"
 
           echo "Changes detected and committed. Pushing branch..."
-          # Push and create PR
           git push --set-upstream origin "$TARGET_BRANCH" --force-with-lease
 
-          # Build JSON payload without relying on jq
+          # Build PR JSON (no external deps)
           read -r -d '' PR_BODY <<'JSON' || true
 {"title":"refineit: suggested fix applied","head":"'"$TARGET_BRANCH"'","base":"'"$BASE_BRANCH"'","body":"Automated fixes from RefineIt."}
 JSON
 
           echo "Attempting to create Pull Request (response follows) ..."
-          # Use curl silent+show-error (sS); this prints the API response (for debug) but hides headers/secrets.
+          # Use curl silent+show-error; do NOT use -v (avoids exposing headers)
           RESPONSE=$(curl -sS -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" || true)
           echo "PR API response: $RESPONSE"
