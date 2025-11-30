@@ -53,7 +53,7 @@ runs:
       run: |
         set -euo pipefail
 
-        # Remove ephemeral/CI artifacts to avoid dirty-workspace detection
+        # Remove ephemeral artifacts to avoid dirty-workspace detection
         rm -rf dist *.tsbuildinfo refineit-report.json refineit-debug.json || true
 
         # Clean untracked files and reset working tree (best-effort)
@@ -61,7 +61,6 @@ runs:
         git reset --hard || true
 
         echo "Running: npx refineit ${{ inputs.args }}"
-        # Run refineit but do not fail the step (we want to upload artifacts)
         npx refineit ${{ inputs.args }} || true
       shell: bash
 
@@ -80,49 +79,40 @@ runs:
       run: |
         set -euo pipefail
 
-        # Require --apply for safety
+        # Safety: require --apply in args
         echo "${{ inputs.args }}" | grep -q -- '--apply' || (echo "Refuse: --apply not present. Aborting." && exit 1)
 
         git config user.name "refineit-bot"
         git config user.email "ci@refineit.local"
 
-        # Determine target branch (fallback to refineit/auto-fixes)
         TARGET_BRANCH="${{ inputs.push-branch }}"
         if [ -z "$TARGET_BRANCH" ]; then
           TARGET_BRANCH="refineit/auto-fixes"
         fi
         BASE_BRANCH="main"
 
-        # Configure authenticated remote (uses the provided push token)
         REMOTE_URL="https://x-access-token:${{ inputs.push_token }}@github.com/${{ github.repository }}"
         git remote set-url origin "$REMOTE_URL"
 
-        # Fetch remote refs safely (do not fetch into local checked-out branch)
         git fetch --no-tags origin "$BASE_BRANCH" || true
         git fetch --no-tags origin "$TARGET_BRANCH" || true
 
-        # Create fresh branch from origin/$BASE_BRANCH if it exists
         if git ls-remote --exit-code --heads origin "$BASE_BRANCH" >/dev/null 2>&1; then
           git checkout -b "$TARGET_BRANCH" "origin/$BASE_BRANCH"
         else
           git checkout -b "$TARGET_BRANCH"
         fi
 
-        # If there are repository changes (applied by refineit), commit & push them
         if [ -n "$(git status --porcelain)" ]; then
           git add -A
           git commit -m "refineit: apply suggested fixes"
 
-          echo "Changes detected and committed. Pushing branch..."
           git push --set-upstream origin "$TARGET_BRANCH" --force-with-lease
 
-          # Build PR JSON (no external deps)
           read -r -d '' PR_BODY <<'JSON' || true
 {"title":"refineit: suggested fix applied","head":"'"$TARGET_BRANCH"'","base":"'"$BASE_BRANCH"'","body":"Automated fixes from RefineIt."}
 JSON
 
-          echo "Attempting to create Pull Request (response follows) ..."
-          # Use curl silent+show-error; do NOT use -v (avoids exposing headers)
           RESPONSE=$(curl -sS -X POST -H "Authorization: token ${{ inputs.push_token }}" -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/${{ github.repository }}/pulls -d "$PR_BODY" || true)
           echo "PR API response: $RESPONSE"
