@@ -263,19 +263,36 @@ This automatically creates:
 
 `refineit/auto-fixes` → Pull Request
 
-# 📁 Project Structure (with assets)
+# 📁 Project Structure
 ```pgsql
-assets/
- ├── banner/
- │    └── refineit-hero-banner.png
- ├── demos/
- │    ├── auto-pr-demo.mp4
- │    ├── backup-restore-demo.gif
- │    ├── safety-lock.gif
- │    └── main-demo.mp4
- ├── screenshots/
- │    ├── before-after.png
- │    └── health-score.png
+.
+├── .github/
+│   ├── actions/
+│   └── workflows/
+├── assets/
+│   ├── banner/
+│   │   └── refineit-hero-banner.png
+│   ├── demos/
+│   │   ├── auto-pr-demo.mp4
+│   │   ├── backup-restore-demo.gif
+│   │   ├── safety-lock.gif
+│   │   └── main-demo.mp4
+│   └── screenshots/
+│       ├── before-after.png
+│       └── health-score.png
+├── src/
+│   ├── utils/
+│   │   ├── analyzer.ts
+│   │   ├── fixer.ts
+│   │   └── ...
+│   └── index.ts
+├── .eslintrc.cjs
+├── .gitignore
+├── .prettierrc
+├── jest.config.cjs
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
 # 📬 Contact & Community
