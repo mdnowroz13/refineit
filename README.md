@@ -42,7 +42,8 @@ RefineIt is the kind of tool you wish existed inside `npx`, so we built it.
 <br/>
 <br/>
 <div align="center">
-  <a href="https://github.com/mdnowroz13/project-videos/blob/main/main-demo.mp4">
+  <a href="[https://github.com/mdnowroz13/project-videos/blob/main/main-demo.mp4](https://cdn.jsdelivr.net/gh/mdnowroz13/project-videos/main/main-demo.mp4
+)">
     <img src="assets/screenshots/before-after.png" width="100%" alt="Watch the Demo Video" />
   </a>
   <p><i>Click the image above to watch the demo video</i></p>
@@ -321,3 +322,4 @@ MIT — do whatever you want, just don’t remove attribution.
 RefineIt was built because developers deserve a tool that actually respects their codebase.
 No surprises. No destructive behavior.
 Just clean, safe, automated refactoring — with full transparency.
+
