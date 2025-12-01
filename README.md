@@ -40,11 +40,14 @@ It scans your entire repository, understands how files depend on each other, and
 RefineIt is the kind of tool you wish existed inside `npx`, so we built it.
 
 <br/>
+<br/>
 <div align="center">
-  <video src="https://github.com/mdnowroz13/refineit/raw/main/assets/demos/main-demo.mp4" width="100%" controls></video>
-  <br/>
-  <a href="https://github.com/mdnowroz13/refineit/raw/main/assets/demos/main-demo.mp4">Watch the demo video directly</a>
+  <a href="https://github.com/mdnowroz13/project-videos/blob/main/main-demo.mp4">
+    <img src="assets/screenshots/before-after.png" width="100%" alt="Watch the Demo Video" />
+  </a>
+  <p><i>Click the image above to watch the demo video</i></p>
 </div>
+<br/>
 <br/>
 
 ---
